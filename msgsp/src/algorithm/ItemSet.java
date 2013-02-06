@@ -2,8 +2,7 @@ package algorithm;
 
 import java.util.ArrayList;
 
-@Deprecated
-public class Transaction {
+public class ItemSet {
 
 	private ArrayList<Integer> items;
 	
