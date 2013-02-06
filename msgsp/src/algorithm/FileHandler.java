@@ -54,8 +54,6 @@ public class FileHandler {
 			
 			reader.close();
 			
-			
-			
 		} catch (FileNotFoundException e) {
 
 			//TODO : log error
@@ -70,10 +68,80 @@ public class FileHandler {
 		return data;
 	}
 	
-	protected void getParameterData(){
+	protected ArrayList<Double> getMISValues(String parameterFilePath){
 
-		//TODO: get parameter data
-		System.out.println("Reading parameter data...");
+		BufferedReader reader;	
+		ArrayList<Double> misValues = new ArrayList<Double>();
+		
+		System.out.println("Reading MIS values...");
+		
+		try {
+			
+			reader = new BufferedReader(new FileReader(parameterFilePath));
+			String currentLine;
+
+			while ((currentLine = reader.readLine()) != null) {
+				
+				if(currentLine.contains("MIS")){
+					
+					Integer equalPos = currentLine.indexOf('=');
+					
+					//TODO: check index, if para.txt is not ordered (low priority)
+					misValues.add(Double.parseDouble(currentLine.substring(equalPos + 1).trim()));					
+				} 				
+			}
+			
+			reader.close();
+			
+		} catch (FileNotFoundException e) {
+	
+			//TODO : log error
+			System.out.println("input data file not found");
+			
+		} catch (Exception e){
+			
+			//TODO : log error
+			System.out.println("Error - Reading MIS values");
+		}	
+		
+		return misValues;
+	}
+	
+	protected Double getSDC(String parameterFilePath){
+		
+		double sdc = 0;		
+		BufferedReader reader;	
+		
+		System.out.println("Reading SDC...");
+		
+		try {
+			
+			reader = new BufferedReader(new FileReader(parameterFilePath));
+			String currentLine;
+
+			while ((currentLine = reader.readLine()) != null) {
+				
+				if(currentLine.contains("SDC")){
+
+					Integer equalPos = currentLine.indexOf('=');
+					sdc = Double.parseDouble(currentLine.substring(equalPos + 1).trim());			
+				}			
+			}
+			
+			reader.close();
+			
+		} catch (FileNotFoundException e) {
+	
+			//TODO : log error
+			System.out.println("input data file not found");
+			
+		} catch (Exception e){
+			
+			//TODO : log error
+			System.out.println("Error - Reading SDC value");
+		}	
+		
+		return sdc;
 	}
 	
 	protected void writeOutputFile(){
@@ -101,11 +169,21 @@ public class FileHandler {
 					System.out.print(item + ",");
 				}
 				
-				System.out.print("}");				
+				System.out.print("}");			
 			}
 			
 			System.out.print(">\n");
-
+		}
+	}
+	
+	protected void printMISValues(ArrayList<Double> misValues){
+		
+		Integer count = 1;
+		
+		for(Double misValue : misValues){			
+			
+			System.out.println("MIS(" + count + ") = " + misValue);
+			count = count+1;
 		}
 	}
 }

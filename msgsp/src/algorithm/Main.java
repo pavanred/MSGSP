@@ -17,17 +17,22 @@ public class Main {
 		String parameterFilePath = System.getProperty("user.dir") + "/data/para.txt";
 		
 		ArrayList<ArrayList<ItemSet>> data;
+		ArrayList<Double> misValues;
+		Double sdc;
 						
 		fileHandler = new FileHandler();
 		
-		//Read the input data file	
+		//Input data 
 		data = fileHandler.getInputData(dataFilePath);
+		misValues = fileHandler.getMISValues(parameterFilePath);
+		sdc = fileHandler.getSDC(parameterFilePath);
 		
 		//DEBUG - verify input data
-		fileHandler.printData(data);
+		//fileHandler.printData(data);
+		//fileHandler.printMISValues(misValues);
+		//System.out.println("SDC = " + sdc);
 		
 		objMsgsp = new Msgsp();
-		
 		
 		//Write the output to file
 		fileHandler.writeOutputFile();		
