@@ -33,6 +33,20 @@ public class Main {
 		
 		objMsgsp = new Msgsp();
 		
+		//Compute actual item support
+		misValues = objMsgsp.computeItemSupport(misValues, data);
+		
+		//Sort min support values
+		misValues = objMsgsp.sortMinSupportValue(misValues);
+		
+		//Init Pass - compute L
+		ArrayList<ItemSet> lSet = objMsgsp.initPass(misValues, data);
+		
+		//Compute Frequent Set 1 - F1
+		ArrayList<Sequence> freqSet1 = objMsgsp.computeFrequentSet_1(misValues);
+			
+		
+		
 		//Write the output to file
 		fileHandler.writeOutputFile();		
 	}
