@@ -7,10 +7,10 @@ import java.util.ArrayList;
 
 public class FileHandler {
 
-	protected ArrayList<ArrayList<ItemSet>> getInputData(String inputFilePath){
+	protected ArrayList<Sequence> getInputData(String inputFilePath){
 		
 		BufferedReader reader;
-		ArrayList<ArrayList<ItemSet>> data = new ArrayList<ArrayList<ItemSet>>();
+		ArrayList<Sequence> data = new ArrayList<Sequence>();
 		
 		System.out.println("Reading input data...");
 				
@@ -19,13 +19,13 @@ public class FileHandler {
 			reader = new BufferedReader(new FileReader(inputFilePath));
 			
 			String currentLine;
-			ArrayList<ItemSet> itemSetList  = new ArrayList<ItemSet>();;
+			Sequence sequence  = new Sequence();
 			ItemSet itemset;
 			ArrayList<Integer> items;
 			
 			while ((currentLine = reader.readLine()) != null) {
 	            
-				itemSetList = new ArrayList<ItemSet>();
+				sequence = new Sequence();
 				
 				currentLine = currentLine.replace("<", "");
 				currentLine = currentLine.replace(">", "");
@@ -46,10 +46,10 @@ public class FileHandler {
 					}
 					
 					itemset.setItems(items);
-					itemSetList.add(itemset);
+					sequence.addItemSet(itemset);
 				}
 				
-				data.add(itemSetList);	
+				data.add(sequence);	
 			 }
 			
 			reader.close();
@@ -68,10 +68,10 @@ public class FileHandler {
 		return data;
 	}
 	
-	protected ArrayList<Double> getMISValues(String parameterFilePath){
+	protected ArrayList<MISValue> getMISValues(String parameterFilePath){
 
 		BufferedReader reader;	
-		ArrayList<Double> misValues = new ArrayList<Double>();
+		ArrayList<MISValue> misValues = new ArrayList<MISValue>();
 		
 		System.out.println("Reading MIS values...");
 		
@@ -79,15 +79,27 @@ public class FileHandler {
 			
 			reader = new BufferedReader(new FileReader(parameterFilePath));
 			String currentLine;
-
+			MISValue tempMISValue;
+			
 			while ((currentLine = reader.readLine()) != null) {
 				
 				if(currentLine.contains("MIS")){
 					
-					Integer equalPos = currentLine.indexOf('=');
+					tempMISValue = new MISValue();
 					
-					//TODO: check index, if para.txt is not ordered (low priority)
-					misValues.add(Double.parseDouble(currentLine.substring(equalPos + 1).trim()));					
+					String tempLine = currentLine;
+					
+					Integer equalPos = tempLine.indexOf('=');
+					Integer startBracketPos = tempLine.indexOf('(');
+					Integer endBracketPos = tempLine.indexOf(')');
+					
+					tempMISValue.setitemNo(Integer.parseInt(tempLine.substring(startBracketPos + 1, endBracketPos)));
+					
+					tempLine = currentLine;
+					
+					tempMISValue.setMinItemSupport(Float.parseFloat(tempLine.substring(equalPos + 1).trim()));
+
+					misValues.add(tempMISValue);					
 				} 				
 			}
 			
@@ -154,13 +166,13 @@ public class FileHandler {
 		//TODO: Logging
 	}
 	
-	protected void printData(ArrayList<ArrayList<ItemSet>> data){
+	protected void printData(ArrayList<Sequence> data){
 		
-		for(ArrayList<ItemSet> itemSetList : data){
+		for(Sequence seq : data){
 			
 			System.out.print("<");
 			
-			for(ItemSet itemset : itemSetList){
+			for(ItemSet itemset : seq.getItemsets()){
 				
 				System.out.print("{");
 				
@@ -176,13 +188,13 @@ public class FileHandler {
 		}
 	}
 	
-	protected void printMISValues(ArrayList<Double> misValues){
+	protected void printMISValues(ArrayList<MISValue> misValues){
 		
 		Integer count = 1;
 		
-		for(Double misValue : misValues){			
+		for(MISValue misValue : misValues){			
 			
-			System.out.println("MIS(" + count + ") = " + misValue);
+			System.out.println("MIS(" + misValue.getItemNo() + ") = " + misValue.getMinItemSupport() + " -- " + misValue.getActualSupport());
 			count = count+1;
 		}
 	}

@@ -1,6 +1,5 @@
 package algorithm;
 
-import java.net.URL;
 import java.util.ArrayList;
 
 public class Main {
@@ -16,8 +15,8 @@ public class Main {
 		String dataFilePath = System.getProperty("user.dir") + "/data/data.txt";
 		String parameterFilePath = System.getProperty("user.dir") + "/data/para.txt";
 		
-		ArrayList<ArrayList<ItemSet>> data;
-		ArrayList<Double> misValues;
+		ArrayList<Sequence> data;
+		ArrayList<MISValue> misValues;
 		Double sdc;
 						
 		fileHandler = new FileHandler();
