@@ -97,7 +97,19 @@ public class Msgsp {
 				
 		return lSet;
 	}
-
+		
+	public Sequence generic_CandidateGeneration(Sequence freqSetk_1) {
+		
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	public Sequence level2_CandidateGeneration(ArrayList<Integer> lSet) {
+		
+		
+		
+		return null;
+	}	
 	
 	//Custom comparator
 	public class CustomComparator implements Comparator<MISValue> {
@@ -105,6 +117,7 @@ public class Msgsp {
 	    public int compare(MISValue o1, MISValue o2) {
 	        return o1.getMinItemSupport().compareTo(o2.getMinItemSupport());
 	    }
-	}	
+	}
+		
 }
 

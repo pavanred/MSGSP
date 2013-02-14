@@ -39,6 +39,20 @@ public class Main {
 
 		ArrayList<Sequence> freqSet1 = objMsgsp.computeFrequentSet_1(misValues, lSet);		//Compute Frequent Set 1 - F1
 		
+		Sequence freqSetk_1;
+		Sequence candidate_k;
+		
+		for(int k=2; (freqSetk_1 = freqSet1.get(k-1)).getItemsets().size() > 0 ; k++){	//k,k-1
+			
+			candidate_k = new Sequence();
+			
+			if(k==2){
+				candidate_k = objMsgsp.level2_CandidateGeneration(lSet);
+			}
+			else{
+				candidate_k = objMsgsp.generic_CandidateGeneration(freqSetk_1);
+			}
+		}
 		
 		fileHandler.writeOutputFile();				//Write the output to file
 	}
