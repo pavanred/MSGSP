@@ -6,6 +6,10 @@ public class ItemSet {
 
 	private ArrayList<Integer> items;
 	
+	public ItemSet(){
+		this.items = new ArrayList<Integer>();
+	}
+	
 	public void setItems(ArrayList<Integer> _items){
 		
 		items = _items;		
@@ -15,4 +19,8 @@ public class ItemSet {
 		
 		return items;
 	}	
+	
+	public void addItem(Integer item){
+		this.items.add(item);
+	}
 }

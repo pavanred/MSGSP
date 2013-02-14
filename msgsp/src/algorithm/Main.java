@@ -37,8 +37,9 @@ public class Main {
 
 		ArrayList<Integer> lSet = objMsgsp.initPass(misValues, dataFilePath);		//Init Pass - compute L
 
-		ArrayList<Sequence> freqSet1 = objMsgsp.computeFrequentSet_1(misValues);		//Compute Frequent Set 1 - F1
-
+		ArrayList<Sequence> freqSet1 = objMsgsp.computeFrequentSet_1(misValues, lSet);		//Compute Frequent Set 1 - F1
+		
+		
 		fileHandler.writeOutputFile();				//Write the output to file
 	}
 

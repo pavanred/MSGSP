@@ -43,11 +43,30 @@ public class Msgsp {
 		return misValues;
 	}
 	
-	public ArrayList<Sequence> computeFrequentSet_1(ArrayList<MISValue> misValues){
+	public ArrayList<Sequence> computeFrequentSet_1(ArrayList<MISValue> misValues, ArrayList<Integer> lSet){
 		
-		//TODO: Compute frequent set 1
+		ArrayList<Sequence> frequentset1 = new ArrayList<Sequence>();
+		Sequence seq = new Sequence();
+		ItemSet items = new ItemSet();
+				
+		for(Integer item : lSet){
+			for(MISValue mVal : misValues){
+				if(mVal.getItemNo() == item){
+					if(mVal.getActualSupport() >= mVal.getMinItemSupport()){
+						
+						items = new ItemSet();
+						items.addItem(item);
+						
+						seq = new Sequence();
+						seq.addItemSet(items);
+						
+						frequentset1.add(seq);
+					}
+				}
+			}
+		}
 		
-		return null;
+		return frequentset1;
 	}
 	
 	public ArrayList<Integer> initPass(ArrayList<MISValue> misValues, String dataFilePath){		
@@ -78,6 +97,7 @@ public class Msgsp {
 				
 		return lSet;
 	}
+
 	
 	//Custom comparator
 	public class CustomComparator implements Comparator<MISValue> {
