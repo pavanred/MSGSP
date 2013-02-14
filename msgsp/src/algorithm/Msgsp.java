@@ -1,21 +1,46 @@
 package algorithm;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 public class Msgsp {
-	
+		
 	public ArrayList<MISValue>sortMinSupportValue(ArrayList<MISValue> misValues){		
 		
-		//TODO: Sort misValues based on MIS values
-		
-		return null;
+	    Collections.sort(misValues, new CustomComparator());
+	    
+		return misValues;
 	}
 	
-	public ArrayList<MISValue> computeItemSupport(ArrayList<MISValue> misValues,ArrayList<Sequence> data){		
+	public ArrayList<MISValue> computeItemSupport(ArrayList<MISValue> misValues,String dataFilePath){		
 		
-		//TODO: Calculate actual support counts from data and set support values to misValues
+		Integer sequenceCount = 0;
 		
-		return null;
+		FileHandler fileHandler = new FileHandler();
+		
+		Sequence seq = fileHandler.getNextSequence(true, dataFilePath);
+		
+		while(seq != null){
+			
+			sequenceCount = sequenceCount + 1;
+			
+			for(Integer item : seq.getAllItems()){
+				for(MISValue mVal : misValues){
+					if(mVal.getItemNo() == item){
+						mVal.setSupportCount(mVal.getSupportCount() + 1);
+					}
+				}
+			}
+			
+			seq = fileHandler.getNextSequence(false, null);
+		}
+		
+		for(MISValue mVal : misValues){
+			mVal.setActualSupport((float)mVal.getSupportCount()/sequenceCount);
+		}
+		
+		return misValues;
 	}
 	
 	public ArrayList<Sequence> computeFrequentSet_1(ArrayList<MISValue> misValues){
@@ -25,11 +50,41 @@ public class Msgsp {
 		return null;
 	}
 	
-	public ArrayList<ItemSet> initPass(ArrayList<MISValue> misValues,ArrayList<Sequence> data){		
+	public ArrayList<Integer> initPass(ArrayList<MISValue> misValues, String dataFilePath){		
 		
-		//TODO: Calculate L 
+		Integer minSupportItem = 0;
+		Float minMIS = 0.0f;
+		ArrayList<Integer> lSet = new ArrayList<Integer>(); 
 		
-		return null;
+		misValues = computeItemSupport(misValues, dataFilePath);		//Compute actual item support
+		
+		for(MISValue mVal : misValues){
+			
+			//nesting ifs to make the code readable
+			
+			if(minSupportItem == 0){
+				if(mVal.getActualSupport() >= mVal.getMinItemSupport()){
+					minSupportItem = mVal.getItemNo();
+					minMIS = mVal.getMinItemSupport();
+					lSet.add(minSupportItem);
+				}		
+			}
+			else{
+				if(mVal.getActualSupport() >= minMIS){
+					lSet.add(mVal.getItemNo());
+				}
+			}	
+		}
+				
+		return lSet;
 	}
 	
+	//Custom comparator
+	public class CustomComparator implements Comparator<MISValue> {
+	    @Override
+	    public int compare(MISValue o1, MISValue o2) {
+	        return o1.getMinItemSupport().compareTo(o2.getMinItemSupport());
+	    }
+	}	
 }
+

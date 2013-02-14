@@ -7,6 +7,10 @@ import java.util.ArrayList;
 
 public class FileHandler {
 
+	private Integer head = 0;
+	private BufferedReader nextReader;
+	
+	@Deprecated
 	protected ArrayList<Sequence> getInputData(String inputFilePath){
 		
 		BufferedReader reader;
@@ -156,6 +160,67 @@ public class FileHandler {
 		return sdc;
 	}
 	
+	protected Sequence getNextSequence(boolean resetHead, String inputFilePath){
+			
+		String currentLine;
+		Sequence sequence = new Sequence();
+		ItemSet itemset;
+		ArrayList<Integer> items;
+		
+		try {	
+		
+			if(resetHead){
+				head = 0;
+				nextReader = new BufferedReader(new FileReader(inputFilePath));
+			}
+		
+			if ((currentLine = nextReader.readLine()) != null) {
+	            
+				sequence = new Sequence();
+				
+				currentLine = currentLine.replace("<", "");
+				currentLine = currentLine.replace(">", "");
+				currentLine = currentLine.replace("{", "");
+				
+				String[] splitItemSets = currentLine.split("}");
+								
+				for(String tempItemSet : splitItemSets){
+					
+					itemset = new ItemSet();
+					items = new ArrayList<Integer>();
+					
+					String[] splitItems = tempItemSet.split(",");
+					
+					for(String tempItem : splitItems){
+						
+						items.add(Integer.parseInt(tempItem.trim()));						
+					}
+					
+					itemset.setItems(items);
+					sequence.addItemSet(itemset);
+				}
+			 }
+			else{
+				nextReader.close();
+				sequence = null;
+			}
+			
+			head = head + 1;
+				
+		} catch (FileNotFoundException e) {
+			
+			//TODO : log error
+			System.out.println("input data file not found");
+			
+		} catch (Exception e){
+			
+			//TODO : log error
+			System.out.println("Error - Reading SDC value");
+		}
+		
+		return sequence;
+	}
+	
 	protected void writeOutputFile(){
 
 		//TODO: Write to output file
@@ -194,7 +259,8 @@ public class FileHandler {
 		
 		for(MISValue misValue : misValues){			
 			
-			System.out.println("MIS(" + misValue.getItemNo() + ") = " + misValue.getMinItemSupport() + " -- " + misValue.getActualSupport());
+			System.out.println("MIS(" + misValue.getItemNo() + ") = " + misValue.getMinItemSupport() + " -- "
+					+ misValue.getActualSupport() + "--" + misValue.getSupportCount());
 			count = count+1;
 		}
 	}

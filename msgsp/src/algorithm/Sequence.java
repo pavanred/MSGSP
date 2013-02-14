@@ -18,4 +18,15 @@ public class Sequence {
 	public void addItemSet(ItemSet itemset){
 		this.itemsets.add(itemset);
 	}
+	
+	public ArrayList<Integer> getAllItems(){
+		
+		ArrayList<Integer> allItems = new ArrayList<Integer>();
+		
+		for(ItemSet itemset : this.itemsets){
+			allItems.addAll(itemset.getItems());
+		}	
+		
+		return allItems;
+	}
 }

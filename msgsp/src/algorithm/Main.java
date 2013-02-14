@@ -15,14 +15,14 @@ public class Main {
 		String dataFilePath = System.getProperty("user.dir") + "/data/data.txt";
 		String parameterFilePath = System.getProperty("user.dir") + "/data/para.txt";
 		
-		ArrayList<Sequence> data;
+		ArrayList<Sequence> data = null;
 		ArrayList<MISValue> misValues;
 		Double sdc;
 						
 		fileHandler = new FileHandler();
 		
 		//Input data 
-		data = fileHandler.getInputData(dataFilePath);
+		//data = fileHandler.getInputData(dataFilePath);
 		misValues = fileHandler.getMISValues(parameterFilePath);
 		sdc = fileHandler.getSDC(parameterFilePath);
 		
@@ -31,24 +31,15 @@ public class Main {
 		//fileHandler.printMISValues(misValues);
 		//System.out.println("SDC = " + sdc);
 		
-		objMsgsp = new Msgsp();
+		objMsgsp = new Msgsp();	
 		
-		//Compute actual item support
-		misValues = objMsgsp.computeItemSupport(misValues, data);
-		
-		//Sort min support values
-		misValues = objMsgsp.sortMinSupportValue(misValues);
-		
-		//Init Pass - compute L
-		ArrayList<ItemSet> lSet = objMsgsp.initPass(misValues, data);
-		
-		//Compute Frequent Set 1 - F1
-		ArrayList<Sequence> freqSet1 = objMsgsp.computeFrequentSet_1(misValues);
-			
-		
-		
-		//Write the output to file
-		fileHandler.writeOutputFile();		
+		misValues = objMsgsp.sortMinSupportValue(misValues);		//Sort min support values
+
+		ArrayList<Integer> lSet = objMsgsp.initPass(misValues, dataFilePath);		//Init Pass - compute L
+
+		ArrayList<Sequence> freqSet1 = objMsgsp.computeFrequentSet_1(misValues);		//Compute Frequent Set 1 - F1
+
+		fileHandler.writeOutputFile();				//Write the output to file
 	}
 
 }

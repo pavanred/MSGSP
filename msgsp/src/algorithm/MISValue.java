@@ -1,10 +1,13 @@
 package algorithm;
 
+import java.util.Comparator;
+
 public class MISValue {
 
 	private Integer itemNo; 
 	private Float minItemSupport;
-	private Float actualSupport;	
+	private Float actualSupport = 0.0f; //Initialized to 0	
+	private Integer supportCount = 0;
 
 	public Integer getItemNo(){
 	    return this.itemNo;
@@ -28,5 +31,13 @@ public class MISValue {
 	
 	public void setActualSupport(Float value){	    
 	     this.actualSupport = value;
+	}
+	
+	public Integer getSupportCount(){
+	    return this.supportCount;
+	}
+	
+	public void setSupportCount(Integer value){	    
+	     this.supportCount = value;
 	}
 }
