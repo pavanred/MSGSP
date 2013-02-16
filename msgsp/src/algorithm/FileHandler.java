@@ -253,6 +253,25 @@ public class FileHandler {
 		}
 	}
 	
+	protected void printSequence(Sequence seq){
+		
+		System.out.print("<");
+			
+		for(ItemSet itemset : seq.getItemsets()){
+				
+			System.out.print("{");
+				
+			for(Integer item : itemset.getItems()){
+					
+				System.out.print(item + ",");
+			}
+				
+			System.out.print("}");			
+		}
+		
+		System.out.print(">\n");
+	}
+	
 	protected void printMISValues(ArrayList<MISValue> misValues){
 		
 		Integer count = 1;
@@ -263,5 +282,33 @@ public class FileHandler {
 					+ misValue.getActualSupport() + "--" + misValue.getSupportCount());
 			count = count+1;
 		}
+	}
+
+	public void printFrequentSets(ArrayList<Sequence> frequentSets) {
+		
+		/*for(int i=1; i < frequentSets.size(); i++){
+			
+			ArrayList<ItemSet> itemsets = frequentSets.get(i).getItemsets();
+			
+			System.out.println("The number of length " + i + " sequential patterns is " + itemsets.size());
+			System.out.print("Pattern : <");
+			for(ItemSet itemset : itemsets){
+				
+				
+				System
+				
+				for(Integer item : itemset.getItems()){
+					System.out.print("{" + item + "}");
+				}
+				
+				
+				
+			}
+			
+			System.out.print("> Count : " + itemset.getCount());
+			System.out.print("/n");
+			
+		}*/
+		
 	}
 }

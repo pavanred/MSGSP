@@ -29,4 +29,15 @@ public class Sequence {
 		
 		return allItems;
 	}
+	public boolean isNotEmpty() {
+		
+		boolean isNotEmpty;
+		
+		if(this.itemsets.size() > 0)
+			isNotEmpty = true;
+		else
+			isNotEmpty = false;
+		
+		return isNotEmpty;
+	}
 }

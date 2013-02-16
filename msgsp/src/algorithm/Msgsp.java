@@ -43,30 +43,29 @@ public class Msgsp {
 		return misValues;
 	}
 	
-	public ArrayList<Sequence> computeFrequentSet_1(ArrayList<MISValue> misValues, ArrayList<Integer> lSet){
+	public Sequence computeFrequentSet_1(ArrayList<MISValue> misValues, ArrayList<Integer> lSet){
 		
-		ArrayList<Sequence> frequentset1 = new ArrayList<Sequence>();
+		//ArrayList<Sequence> frequentset1 = new ArrayList<Sequence>();
 		Sequence seq = new Sequence();
-		ItemSet items = new ItemSet();
-				
+		ItemSet items = new ItemSet();		
+		
 		for(Integer item : lSet){
 			for(MISValue mVal : misValues){
 				if(mVal.getItemNo() == item){
 					if(mVal.getActualSupport() >= mVal.getMinItemSupport()){
 						
 						items = new ItemSet();
-						items.addItem(item);
+						items.addItem(item);						
 						
-						seq = new Sequence();
 						seq.addItemSet(items);
 						
-						frequentset1.add(seq);
+						//frequentset1.add(seq);
 					}
 				}
 			}
 		}
 		
-		return frequentset1;
+		return seq;
 	}
 	
 	public ArrayList<Integer> initPass(ArrayList<MISValue> misValues, String dataFilePath){		
@@ -100,16 +99,62 @@ public class Msgsp {
 		
 	public Sequence generic_CandidateGeneration(Sequence freqSetk_1) {
 		
-		// TODO Auto-generated method stub
-		return null;
+		
+		return new Sequence();
 	}
 	
-	public Sequence level2_CandidateGeneration(ArrayList<Integer> lSet) {
+	public Sequence level2_CandidateGeneration(ArrayList<Integer> lSet, ArrayList<MISValue> misValues, Double sdc) {
 		
+		Sequence seq = new Sequence();
+		ItemSet items = new ItemSet();
+				
+		for(Integer l=0; l < lSet.size(); l++){
+			
+			MISValue mVal = findMISValueByItemNo(lSet.get(l), misValues);
+			
+			if(mVal.getActualSupport() >= mVal.getMinItemSupport()){
+				
+				for(Integer h=l;  h< lSet.size(); h++){
+					
+					MISValue xItem = findMISValueByItemNo(lSet.get(l), misValues);
+					MISValue yItem = findMISValueByItemNo(lSet.get(h), misValues);
+					
+					Double supportDifference = (double)(xItem.getMinItemSupport() - yItem.getMinItemSupport());
+					
+					if(Math.abs(supportDifference) <= sdc && yItem.getActualSupport() >= xItem.getMinItemSupport()){
+						
+						items = new ItemSet();					//<{x,y}>
+						items.addItem(xItem.getItemNo());
+						items.addItem(yItem.getItemNo());						
+						seq.addItemSet(items);
+						
+						items = new ItemSet();					//<{x},{y}>
+						items.addItem(xItem.getItemNo());
+						seq.addItemSet(items);
+						
+						items = new ItemSet();			
+						items.addItem(yItem.getItemNo());
+						seq.addItemSet(items);						
+					}					
+				}
+			}			
+		}
 		
-		
-		return null;
+		return seq;
 	}	
+	
+	//find MISValue object from item Id
+	protected MISValue findMISValueByItemNo(Integer itemNo, ArrayList<MISValue> misValues){
+		
+		MISValue misVal = null;
+		
+		for(MISValue mVal : misValues){
+			if(mVal.getItemNo() == itemNo)
+				misVal = mVal;
+		}
+		
+		return misVal;
+	}
 	
 	//Custom comparator
 	public class CustomComparator implements Comparator<MISValue> {
