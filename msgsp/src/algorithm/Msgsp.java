@@ -163,6 +163,21 @@ public class Msgsp {
 	        return o1.getMinItemSupport().compareTo(o2.getMinItemSupport());
 	    }
 	}
+
+	public ItemSet getCandidatePrime(Sequence candidate_k, ItemSet candidate, MISValue minMISValue) {
+		
+		ItemSet itemset = null;
+
+		
+		if(candidate.getItems().remove(minMISValue.getItemNo())){
+			itemset = candidate;
+		}
+		else{
+			itemset = null;
+		}		
+		
+		return itemset;
+	}
 		
 }
 

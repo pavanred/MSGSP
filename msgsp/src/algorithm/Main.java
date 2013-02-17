@@ -64,7 +64,6 @@ public class Main {
 			
 			Sequence seq = fileHandler.getNextSequence(true, dataFilePath);
 			ItemSet candidate_prime = new ItemSet();
-			boolean minMISItemRemoved = false;
 			Integer seqCount = 0;
 			
 			while(seq != null){
@@ -73,15 +72,16 @@ public class Main {
 				
 				for(ItemSet candidate : candidate_k.getItemsets()){
 					
-					if(candidate.containedIn(seq, minMISItemRemoved)){
+					if(candidate.containedIn(seq)){
 						candidate.incrementCount();
 					}
 					
-					candidate_prime = candidate.getCandidatePrime();
-					minMISItemRemoved = true;
+					candidate_prime = objMsgsp.getCandidatePrime(candidate_k, candidate, minMISValue);
 					
-					if(candidate_prime.containedIn(seq, minMISItemRemoved)){
-						candidate_prime.incrementCount();
+					if(candidate_prime != null){				//check if candidate doesn't contain minMISValue item
+						if(candidate_prime.containedIn(seq)){
+							candidate_prime.incrementCount();
+						}
 					}
 				}
 				
@@ -102,9 +102,8 @@ public class Main {
 		fileHandler.writeOutputFile();				//Write the output to file
 		
 		//DEBUG
-		//fileHandler.printFrequentSets(frequentSets);
-		System.out.println("out");
-		fileHandler.printData(frequentSets);
+		fileHandler.printFrequentSets(frequentSets);
+		//fileHandler.printData(frequentSets);
 	}
 
 }

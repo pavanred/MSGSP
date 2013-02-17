@@ -286,29 +286,24 @@ public class FileHandler {
 
 	public void printFrequentSets(ArrayList<Sequence> frequentSets) {
 		
-		/*for(int i=1; i < frequentSets.size(); i++){
+		for(int i=1; i < frequentSets.size(); i++){
 			
 			ArrayList<ItemSet> itemsets = frequentSets.get(i).getItemsets();
 			
 			System.out.println("The number of length " + i + " sequential patterns is " + itemsets.size());
-			System.out.print("Pattern : <");
+			
 			for(ItemSet itemset : itemsets){
-				
-				
-				System
+								
+				System.out.print("Pattern : < {");
 				
 				for(Integer item : itemset.getItems()){
-					System.out.print("{" + item + "}");
+					System.out.print(item + ",");
 				}
 				
-				
-				
+				System.out.print("}> Count : " + itemset.getCount());
+				System.out.print("\n");
 			}
-			
-			System.out.print("> Count : " + itemset.getCount());
-			System.out.print("/n");
-			
-		}*/
+		}
 		
 	}
 }

@@ -37,13 +37,18 @@ public class ItemSet {
 		this.count = this.count + 1;
 	}
 	
-	public boolean containedIn(Sequence seq, boolean minMISItemRemoved) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	public ItemSet getCandidatePrime() {
-		// TODO Auto-generated method stub
-		return new ItemSet();
+	public boolean containedIn(Sequence seq) {
+		
+		boolean isContainedIn = false;		
+					
+		for(ItemSet itemsInSeq : seq.getItemsets()){	
+				
+			if(itemsInSeq.getItems().containsAll(this.items)){
+				isContainedIn = true;
+				break;
+			}
+		}				
+		
+		return isContainedIn;
 	}
 }
