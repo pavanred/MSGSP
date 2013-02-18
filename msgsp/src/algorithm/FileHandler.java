@@ -290,11 +290,12 @@ public class FileHandler {
 		
 		for(int i=1; (tmpseq = getOfSize(frequentSets, i)).size() > 0 ; i++){
 			
+			System.out.println("");
 			System.out.println("The number of length " + i + " sequential patterns is " + tmpseq.size());
 			
 			for(Sequence seq : tmpseq){
 				
-				System.out.print("<");
+				System.out.print("Pattern : <");
 				
 				for(ItemSet itemset : seq.getItemsets()){
 					
@@ -325,7 +326,8 @@ public class FileHandler {
 		ArrayList<Sequence> setOfSize = new ArrayList<Sequence>();
 		
 		for(Sequence seq : frequentSets){
-			if(seq.getItemsets().size() == size){
+			//if(seq.getItemsets().size() == size){
+			if(seq.getAllItems().size() == size){
 				setOfSize.add(seq);
 			}
 		}

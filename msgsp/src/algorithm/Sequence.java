@@ -54,11 +54,11 @@ public class Sequence {
 		Integer firstItemNo = this.getAllItems().get(0);
 		
 		MISValue firstItem = findMISValueByItemNo(firstItemNo, misValues);
-		Float minMISVal = 0.0f;
+		Float minMISVal = findMISValueByItemNo(misValues.size() - 1, misValues).getMinItemSupport();
 		Float tmpMISVal = 0.0f;
 		
 		for(int i=1; i < this.getAllItems().size(); i++){
-			if(minMISVal > (tmpMISVal = findMISValueByItemNo(i, misValues).getMinItemSupport())){
+			if(minMISVal > (tmpMISVal = findMISValueByItemNo(this.getAllItems().get(i), misValues).getMinItemSupport())){
 				minMISVal = tmpMISVal;
 			}
 		}
@@ -94,11 +94,11 @@ public class Sequence {
 		Integer lastItemNo = this.getAllItems().get(this.getAllItems().size() - 1);
 		
 		MISValue lastItem = findMISValueByItemNo(lastItemNo, misValues);
-		Float minMISVal = 0.0f;
+		Float minMISVal = findMISValueByItemNo(misValues.size() - 1, misValues).getMinItemSupport();
 		Float tmpMISVal = 0.0f;
 		
 		for(int i=0; i < this.getAllItems().size() - 1; i++){
-			if(minMISVal > (tmpMISVal = findMISValueByItemNo(i, misValues).getMinItemSupport())){
+			if(minMISVal > (tmpMISVal = findMISValueByItemNo(this.getAllItems().get(i), misValues).getMinItemSupport())){
 				minMISVal = tmpMISVal;
 			}
 		}
@@ -146,9 +146,171 @@ public class Sequence {
 	public boolean containedIn(Sequence seq) {
 		
 		boolean isContainedIn = false;		
-					
-		if(seq.getItemsets().containsAll(this.itemsets)){
+		int i = 0;
+		/*ArrayList<Integer> counts = new ArrayList<Integer>();
+		
+		while(true){
+			
+			for(int c=0; c < this.itemsets.size(); c++){								
+				
+				i = 0;
+				
+				for(int s=0; s < seq.getItemsets().size(); s++){			
+								
+					if(seq.getItemsets().get(s).isSuperSetOf(this.itemsets.get(c))){
+						i = i+1;
+					}					
+				}	
+				
+				counts.set(c, i); 				
+			}			
+		}*/
+		
+		
+		
+		/*if(seq.getItemsets().containsAll(this.itemsets)){
 			isContainedIn = true;
+		}
+		else{
+			isContainedIn = false;
+		}*/
+		
+		/*for(ItemSet is : this.itemsets){			
+			for(ItemSet s_is : seq.getItemsets()){
+				
+				if(is.checkEquals(s_is)){
+					count++;
+				}				
+			}
+		}
+		
+		if(count == this.itemsets.size())
+			isContainedIn = true;
+		else
+			isContainedIn = false;*/
+		
+		if(seq.getAllItems().containsAll(this.getAllItems()))
+			isContainedIn = true;
+		
+		/*---------------------
+		 for(int c=0; c < this.itemsets.size(); c++){
+
+						
+			if(this.itemsets.get(c).getItems().contains(5) && this.itemsets.get(c).getItems().contains(2)){
+				int x = 0;
+			}
+			
+			for(ItemSet s_is : seq.getItemsets()){				
+								
+				if(s_is.isSuperSetOf(this.itemsets.get(c))){
+					
+					i = i+1;
+					break;
+				}
+			}
+		}
+		
+		if(i == this.itemsets.size())
+			isContainedIn = true;
+		else
+			isContainedIn = false;
+			---------------------*/
+		
+		/*ArrayList<Integer> done_s = new ArrayList<Integer>();
+		ArrayList<Integer> done_c = new ArrayList<Integer>();
+		
+		for(int c=0; c < this.itemsets.size(); c++){
+			
+			if(done_s.contains(c))
+				continue;
+			
+			for(int s=0; s < seq.getItemsets().size(); s++){			
+			
+				if(done_c.contains(s))
+					continue;
+				
+				if(seq.getItemsets().get(s).getItems().containsAll(this.itemsets.get(c).getItems())){
+					done_s.add(s);
+					done_c.add(c);
+				}
+				
+			}
+		}
+			
+		if(done_c.size() == this.itemsets.size())
+			isContainedIn = true;
+		else
+			isContainedIn = false; */
+		
+		return isContainedIn;
+	}
+
+	public boolean containedIn_p(Sequence seq, ArrayList<MISValue> misValues) {
+		
+		boolean isContainedIn = false;	
+		Integer minMISValue = 0;
+		Float minMIS = misValues.get(misValues.size() - 1).getMinItemSupport();
+		
+		for(int i = 0; i < this.getAllItems().size(); i++){
+			
+			MISValue tmpMIS = findMISValueByItemNo(this.getAllItems().get(i), misValues);
+			
+			if(tmpMIS.getMinItemSupport() < minMIS){
+				minMIS = tmpMIS.getMinItemSupport();	
+				minMISValue = tmpMIS.getItemNo();
+			}
+		}	
+		
+		ArrayList<Integer> x = new ArrayList<Integer>(this.getAllItems());
+			
+		if(x.remove(minMISValue)){			
+		
+			if(seq.getAllItems().containsAll(x))
+				isContainedIn = true;
+		}
+		else{
+			isContainedIn = false;
+		}
+		
+		return isContainedIn;
+	}
+		
+	public Float getMinMIS(ArrayList<MISValue> misValues){
+		
+		Float minMIS = misValues.get(misValues.size() - 1).getMinItemSupport();
+		Float tmp = 0.0f;
+		
+		for(Integer item : this.getAllItems()){
+			
+			if((tmp = findMISValueByItemNo(item, misValues).getMinItemSupport()) < minMIS)
+				minMIS = tmp;			
+		}	
+		
+		return minMIS;
+	}
+
+	public boolean containedIn_Prime(Sequence seq, ArrayList<MISValue> misValues) {
+		
+		boolean isContainedIn = false;	
+		Integer minItem = 0;
+		Float minMIS = misValues.get(misValues.size() - 1).getMinItemSupport();
+		
+		for(int i = 0; i < this.getAllItems().size(); i++){
+			
+			MISValue tmpMIS = findMISValueByItemNo(this.getAllItems().get(i), misValues);
+			
+			if(tmpMIS.getMinItemSupport() < minMIS){
+				minMIS = tmpMIS.getMinItemSupport();	
+				minItem = tmpMIS.getItemNo();
+			}
+		}	
+		
+		ArrayList<Integer> x = new ArrayList<Integer>(this.getAllItems());
+			
+		if(x.remove(minItem)){			
+		
+			if(seq.getAllItems().containsAll(x))
+				isContainedIn = true;
 		}
 		else{
 			isContainedIn = false;

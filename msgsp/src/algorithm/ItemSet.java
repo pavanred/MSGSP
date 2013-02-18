@@ -32,8 +32,49 @@ public class ItemSet {
 	public void addItem(Integer item){
 		this.items.add(item);
 	}
+
+	public boolean checkEquals(ItemSet s_is) {
+		
+		boolean checkEquals = false;
+		
+		if(this.items.size() == s_is.getItems().size()){
+		
+			for(int i=0; i< this.items.size(); i++){
+				
+				if(this.items.get(i) == s_is.getItems().get(i)){
+					checkEquals = true;
+				}
+				else{
+					checkEquals = false;
+					break;
+				}
+			}
+			
+		}		
+		
+		return checkEquals;
+	}
 	
 	/*public void incrementCount(){
 		this.count = this.count + 1;
 	}*/
+	
+	public boolean isSuperSetOf(ItemSet is){
+		
+		boolean isSuperSetOf = false;
+		
+		/*if(this.items.containsAll(is.getItems()))
+			isSuperSetOf = true;*/
+		
+		for(Integer it : is.getItems()){
+			if(this.items.contains(it))
+				isSuperSetOf = true;
+			else{
+				isSuperSetOf = false;
+				break;
+			}
+		}
+		
+		return isSuperSetOf;		
+	}
 }

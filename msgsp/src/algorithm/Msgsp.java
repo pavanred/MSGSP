@@ -3,6 +3,9 @@ package algorithm;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
+
+import org.omg.CORBA.FREE_MEM;
 
 public class Msgsp {
 		
@@ -113,7 +116,7 @@ public class Msgsp {
 		return lSet;
 	}
 		
-	public ArrayList<Sequence> generic_CandidateGeneration(ArrayList<Sequence> freqSetk_1, ArrayList<MISValue> misValues, Integer size) {
+	public ArrayList<Sequence> generic_CandidateGeneration(ArrayList<Sequence> freqSetk_1, ArrayList<MISValue> misValues, Integer size, Double sdc) {
 		
 		ArrayList<Sequence> candidateSeq = new ArrayList<Sequence>();
 		Sequence candidate = new Sequence();
@@ -124,30 +127,57 @@ public class Msgsp {
 			
 			for(Integer h=l; h < freqSetk_1.size(); h++){
 				
-				Sequence s1 = freqSetk_1.get(l);
-				Sequence s2 = freqSetk_1.get(h);
+				if(l != h){
 				
-				tmpS1 = new ArrayList<Integer>(s1.getAllItems());
-				tmpS2 = new ArrayList<Integer>(s2.getAllItems());
-				
-				if(s1.isFirstItemLowestMIS(misValues)){
+					Sequence s1 = freqSetk_1.get(l);
+					Sequence s2 = freqSetk_1.get(h);
 					
-					if(condition1(s1,s2) &&  condition2(s1,s2,misValues)){
+					tmpS1 = new ArrayList<Integer>(s1.getAllItems());
+					tmpS2 = new ArrayList<Integer>(s2.getAllItems());
+					
+					if(s1.isFirstItemLowestMIS(misValues)){
 						
-						if(s2.isSeperateItemSet(tmpS2)){
+						//if(condition1(s1,s2) &&  condition2(s1,s2,misValues)){
 							
-							candidate = new Sequence();
-							
-							candidate.setItemsets(s1.getItemsets());
-							ItemSet lastItemSet = new ItemSet();
-							lastItemSet.addItem(s2.getLastItem());
-							
-							candidate.addItemSet(lastItemSet);
-							
-							candidateSeq.add(candidate);
-							
-							if((size == 2 && s1.getAllItems().size() == 2) && 
-									(findMISValueByItemNo(tmpS2.get(tmpS2.size() - 1),misValues).getMinItemSupport() > findMISValueByItemNo(tmpS1.get(tmpS1.size() - 1),misValues).getMinItemSupport())) {
+							if(s2.isSeperateItemSet(tmpS2)){
+								
+								candidate = new Sequence();
+								
+								candidate.setItemsets(s1.getItemsets());
+								ItemSet lastItemSet = new ItemSet();
+								lastItemSet.addItem(s2.getLastItem());
+								
+								candidate.addItemSet(lastItemSet);
+								
+								if(getSupportDifference(candidate, misValues) <= sdc)			
+									candidateSeq.add(candidate);
+								
+								if((size == 2 && s1.getAllItems().size() == 2) && 
+										(findMISValueByItemNo(tmpS2.get(tmpS2.size() - 1),misValues).getMinItemSupport() > findMISValueByItemNo(tmpS1.get(tmpS1.size() - 1),misValues).getMinItemSupport())) {
+									
+									candidate = new Sequence();
+									
+									for(Integer i=0; i < s1.getItemsets().size(); i++){
+										
+										if(i == s1.getItemsets().size() - 1){
+											
+											ItemSet lastItemSet1 = s1.getItemsets().get(i);
+											lastItemSet1.addItem(s2.getLastItem());
+											
+											candidate.addItemSet(lastItemSet1);
+										}
+										else{
+											candidate.addItemSet(s1.getItemsets().get(i));
+										}										
+									}
+																		
+									if(getSupportDifference(candidate, misValues) <= sdc)			
+										candidateSeq.add(candidate);
+								}							
+							}
+							else if(((size == 2 && s1.getAllItems().size() == 2) && 
+									(findMISValueByItemNo(tmpS2.get(tmpS2.size() - 1),misValues).getMinItemSupport() > findMISValueByItemNo(tmpS1.get(tmpS1.size() - 1),misValues).getMinItemSupport())) 
+									|| (s1.getAllItems().size() > 2)){
 								
 								candidate = new Sequence();
 								
@@ -165,92 +195,86 @@ public class Msgsp {
 									}										
 								}
 								
-								candidateSeq.add(candidate);
-							}							
-						}
-						else if(((size == 2 && s1.getAllItems().size() == 2) && 
-								(findMISValueByItemNo(tmpS2.get(tmpS2.size() - 1),misValues).getMinItemSupport() > findMISValueByItemNo(tmpS1.get(tmpS1.size() - 1),misValues).getMinItemSupport())) 
-								|| (s1.getAllItems().size() > 2)){
+								if(getSupportDifference(candidate, misValues) <= sdc)				
+									candidateSeq.add(candidate);							
+							}						
+						//}					
+					}
+					else if(s2.isLastItemLowestMIS(misValues)){
+						
+					}
+					else{					
+						
+						tmpS1 = new ArrayList<Integer>(s1.getAllItems());
+						tmpS2 = new ArrayList<Integer>(s2.getAllItems());
+						
+						if(tmpS1.size() > 0 && tmpS2.size()>0){
 							
-							candidate = new Sequence();
+							tmpS1.remove(0);
+							tmpS2.remove(tmpS2.size() - 1);
 							
-							for(Integer i=0; i < s1.getItemsets().size(); i++){
+							if(tmpS1 == tmpS2){
 								
-								if(i == s1.getItemsets().size() - 1){
+								if(s2.isSeperateItemSet(tmpS2)){
 									
-									ItemSet lastItemSet1 = s1.getItemsets().get(i);
-									lastItemSet1.addItem(s2.getLastItem());
+									candidate = new Sequence();
 									
-									candidate.addItemSet(lastItemSet1);
+									candidate.setItemsets(s1.getItemsets());
+									ItemSet lastItemSet = new ItemSet();
+									lastItemSet.addItem(s2.getLastItem());
+									
+									candidate.addItemSet(lastItemSet);
 								}
 								else{
-									candidate.addItemSet(s1.getItemsets().get(i));
-								}										
-							}
-							
-							candidateSeq.add(candidate);							
-						}						
-					}					
-				}
-				else if(s2.isLastItemLowestMIS(misValues)){
-					
-				}
-				else{					
-					
-					tmpS1 = new ArrayList<Integer>(s1.getAllItems());
-					tmpS2 = new ArrayList<Integer>(s2.getAllItems());
-					
-					if(tmpS1.size() > 0 && tmpS2.size()>0){
-						
-						tmpS1.remove(0);
-						tmpS2.remove(tmpS2.size() - 1);
-						
-						if(tmpS1 == tmpS2){
-							
-							if(s2.isSeperateItemSet(tmpS2)){
-								
-								candidate = new Sequence();
-								
-								candidate.setItemsets(s1.getItemsets());
-								ItemSet lastItemSet = new ItemSet();
-								lastItemSet.addItem(s2.getLastItem());
-								
-								candidate.addItemSet(lastItemSet);
-							}
-							else{
-								candidate = new Sequence();
-								
-								for(Integer i=0; i < s1.getItemsets().size(); i++){
+									candidate = new Sequence();
 									
-									if(i == s1.getItemsets().size() - 1){
+									for(Integer i=0; i < s1.getItemsets().size(); i++){
 										
-										ItemSet lastItemSet = s1.getItemsets().get(i);
-										lastItemSet.addItem(s2.getLastItem());
-										
-										candidate.addItemSet(lastItemSet);
+										if(i == s1.getItemsets().size() - 1){
+											
+											ItemSet lastItemSet = s1.getItemsets().get(i);
+											lastItemSet.addItem(s2.getLastItem());
+											
+											candidate.addItemSet(lastItemSet);
+										}
+										else{
+											candidate.addItemSet(s1.getItemsets().get(i));
+										}										
 									}
-									else{
-										candidate.addItemSet(s1.getItemsets().get(i));
-									}										
+									
 								}
 								
-							}
-							
-						}						
+								if(getSupportDifference(candidate, misValues) <= sdc)						
+									candidateSeq.add(candidate);
+							}						
+						}					
 					}
-					
 				}
-				
-				candidate = pruneCandidate(candidate);
-				
-				candidateSeq.add(candidate);
 			}			
 		}
 		
+		candidateSeq = pruneCandidates(candidateSeq, freqSetk_1, size);
 		
 		return candidateSeq;
 	}
 	
+	private Double getSupportDifference(Sequence candidate, ArrayList<MISValue> misValues) {
+		
+		Float minMIS = misValues.get(misValues.size() - 1).getMinItemSupport();
+		Float maxMIS = 0.0f;
+		Float tmp = 0.0f;
+		
+		for(Integer item : candidate.getAllItems()){
+			if((tmp = findMISValueByItemNo(item, misValues).getMinItemSupport()) < minMIS)
+				minMIS = tmp;
+			
+			if((tmp = findMISValueByItemNo(item, misValues).getMinItemSupport()) > maxMIS)
+				maxMIS = tmp;
+		}
+		
+		return (double) (maxMIS - minMIS);		
+	}
+
 	private boolean condition1(Sequence s1, Sequence s2) {
 		
 		boolean isCondition1 = false;
@@ -258,7 +282,19 @@ public class Msgsp {
 		ArrayList<Integer> tmpS1 = new ArrayList<Integer>(s1.getAllItems());
 		ArrayList<Integer> tmpS2 = new ArrayList<Integer>(s2.getAllItems());
 				
-		if(tmpS1.size() > 0 && tmpS2.size() > 0){
+		if(tmpS1.size() > 1 && tmpS2.size() > 0){
+			
+			tmpS1.remove(1);
+			tmpS2.remove(tmpS2.size() - 1);
+			
+			if(tmpS1 == tmpS2)
+				isCondition1 = true;
+			else
+				isCondition1 = false;
+			
+		}
+		
+		/*if(tmpS1.size() > 1 && tmpS2.size() > 0){
 		
 			Integer s1_Second = tmpS1.get(1);
 			Integer s2_Last = tmpS2.get(tmpS2.size() - 1);
@@ -270,7 +306,9 @@ public class Msgsp {
 				
 				if(itemset.getItems().contains(s1_Second)){	
 					
-					tmpItemSet1.setItems(itemset.getItems());
+					//tmpItemSet1.setItems(itemset.getItems());
+					
+					ArrayList<Integer>
 					
 					tmpItemSet1.getItems().remove(s1_Second);
 					break;
@@ -292,7 +330,7 @@ public class Msgsp {
 				isCondition1 = true;
 			else
 				isCondition1 = false;
-		}
+		}*/
 		
 		return isCondition1;
 	}
@@ -316,11 +354,56 @@ public class Msgsp {
 		return isCondition2;
 	}
 
-	private Sequence pruneCandidate(Sequence candidate) {
+	private ArrayList<Sequence> pruneCandidates(ArrayList<Sequence> candidateSeq, ArrayList<Sequence> freqSetk_1, Integer size) {
 		
-		//TODO
+		ArrayList<Sequence> cSeq = new ArrayList<Sequence>();
+				
+		for(Sequence s : candidateSeq){
+			
+			ArrayList<Integer> tmp1 = new ArrayList<Integer>(s.getAllItems());			
+			if(tmp1.size() > 1)
+				tmp1.remove(0);
+			else
+				continue;
+			
+			ArrayList<Integer> tmp2 = new ArrayList<Integer>(s.getAllItems());				
+			if(tmp2.size() > 1)
+				tmp2.remove(tmp2.size() - 1);
+			else
+				continue;
+			
+			for(Sequence ts : freqSetk_1){
+				
+				if(ts.getAllItems().containsAll(tmp1) && ts.getAllItems().containsAll(tmp2)){
+					cSeq.add(s);
+				}
+			}
+		}
 		
-		return null;
+		//cSeq = removeDuplicateSequences(cSeq);
+		
+		return cSeq;
+	}
+
+	public ArrayList<Sequence> removeDuplicateSequences(ArrayList<Sequence> seqs) {
+		
+		/*ArrayList<Sequence> al = new ArrayList<Sequence>(seqs);
+		// add elements to al, including duplicates
+		HashSet<Sequence> hs = new HashSet<Sequence>();
+		hs.addAll(al);
+		al.clear();
+		al.addAll(hs);
+		
+		ArrayList<Sequence> nullsets = new ArrayList<Sequence>(al);
+		
+		for(Sequence s : al){
+			for (ItemSet is : s.getItemsets()){
+				if(is.getItems().size() == 0)
+					nullsets.remove(s);
+			}
+		}*/
+		
+		return seqs;
 	}
 
 	public ArrayList<Sequence> level2_CandidateGeneration(ArrayList<Integer> lSet, ArrayList<MISValue> misValues, Double sdc) {
@@ -337,30 +420,37 @@ public class Msgsp {
 				
 				for(Integer h=l;  h< lSet.size(); h++){
 					
-					MISValue xItem = findMISValueByItemNo(lSet.get(l), misValues);
-					MISValue yItem = findMISValueByItemNo(lSet.get(h), misValues);
+					if(l != h){
 					
-					Double supportDifference = (double)(xItem.getMinItemSupport() - yItem.getMinItemSupport());
-					
-					if(Math.abs(supportDifference) <= sdc && yItem.getActualSupport() >= xItem.getMinItemSupport()){
+						MISValue xItem = findMISValueByItemNo(lSet.get(l), misValues);
+						MISValue yItem = findMISValueByItemNo(lSet.get(h), misValues);
 						
-						seq = new Sequence();
-						items = new ItemSet();					//<{x,y}>
-						items.addItem(xItem.getItemNo());
-						items.addItem(yItem.getItemNo());						
-						seq.addItemSet(items);
-						candidate.add(seq);
+						Double supportDifference = (double)(xItem.getMinItemSupport() - yItem.getMinItemSupport());
 						
-						seq = new Sequence();
-						items = new ItemSet();					//<{x},{y}>
-						items.addItem(xItem.getItemNo());
-						seq.addItemSet(items);
-						
-						items = new ItemSet();			
-						items.addItem(yItem.getItemNo());
-						seq.addItemSet(items);	
-						candidate.add(seq);
-					}					
+						if(Math.abs(supportDifference) <= sdc && yItem.getActualSupport() >= xItem.getMinItemSupport()){
+							
+							seq = new Sequence();
+							items = new ItemSet();					//<{x,y}>
+							items.addItem(xItem.getItemNo());
+							items.addItem(yItem.getItemNo());	
+							
+							seq.addItemSet(items);
+							if(getSupportDifference(seq, misValues) <= sdc)			
+								candidate.add(seq);
+							
+							seq = new Sequence();
+							items = new ItemSet();					//<{x},{y}>
+							items.addItem(xItem.getItemNo());
+							seq.addItemSet(items);
+							
+							items = new ItemSet();			
+							items.addItem(yItem.getItemNo());
+							seq.addItemSet(items);	
+							
+							//if(getSupportDifference(seq, misValues) <= sdc)			
+								candidate.add(seq);
+						}
+					}
 				}
 			}			
 		}
@@ -389,34 +479,40 @@ public class Msgsp {
 	    }
 	}
 
-	public Sequence getCandidatePrime(Sequence candidate, MISValue minMISValue) {
+	public Sequence getCandidatePrime(Sequence candidate, ArrayList<MISValue> misValues, ArrayList<Sequence> candSeqs) {
 		
-		Sequence seq = new Sequence();
+		Sequence newseq = null;
 		
-		seq = candidate;
+		MISValue minMISval = new MISValue();
+		Float minMIS = misValues.get(misValues.size() - 1).getMinItemSupport();
 		
-		for(ItemSet itemset : seq.getItemsets()){
+		for(int i = 0; i < candidate.getAllItems().size(); i++){
 			
-			if(itemset.getItems().remove((minMISValue.getItemNo()))){
-				break;
-			}			
+			MISValue tmpMIS = findMISValueByItemNo(candidate.getAllItems().get(i), misValues);
+			
+			if(tmpMIS.getMinItemSupport() < minMIS){
+				minMIS = tmpMIS.getMinItemSupport();	
+				minMISval = tmpMIS;
+			}
+		}	
+		
+		ArrayList<Integer> x = new ArrayList<Integer>(candidate.getAllItems());
+		
+		if(x.remove(minMISval.getItemNo())){
+			
+			for(Sequence s : candSeqs){
+				
+				if(s.getAllItems().containsAll(x)){
+					newseq = s;
+					break;
+				}				
+			}
+			
 		}
+		else
+			newseq = null;
 		
-		if(candidate == seq)
-			seq = null;
-		
-		return seq;
-		
-		/*ItemSet itemset = null;
-		
-		if(candidate.getItems().remove(minMISValue.getItemNo())){
-			itemset = candidate;
-		}
-		else{
-			itemset = null;
-		}		
-		
-		return itemset;*/
+		return newseq;
 	}
 
 	public ArrayList<Sequence> getOfSize(ArrayList<Sequence> frequentSets, int size) {
