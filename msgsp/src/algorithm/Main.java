@@ -15,8 +15,7 @@ public class Main {
 		String dataFilePath = System.getProperty("user.dir") + "/data/data.txt";
 		String parameterFilePath = System.getProperty("user.dir") + "/data/para.txt";
 		
-		ArrayList<Sequence> frequentSets = new ArrayList<Sequence>();
-		frequentSets.add(new Sequence());		//leaving 0 empty
+		ArrayList<Sequence> frequentSets = new ArrayList<Sequence>();		
 		ArrayList<Sequence> data = null;
 		ArrayList<MISValue> misValues;
 		Double sdc;
@@ -39,44 +38,45 @@ public class Main {
 
 		ArrayList<Integer> lSet = objMsgsp.initPass(misValues, dataFilePath);		//Init Pass - compute L
 
-		Sequence freqSet1 = objMsgsp.computeFrequentSet_1(misValues, lSet);		//Compute Frequent Set 1 - F1
-		frequentSets.add(freqSet1);
+		ArrayList<Sequence> freqSet1 = objMsgsp.computeFrequentSet_1(misValues, lSet);		//Compute Frequent Set 1 - F1
+		frequentSets.addAll(freqSet1);
 		
-		Sequence freqSetk_1;
-		Sequence candidate_k;
+		ArrayList<Sequence> freqSetk_1;
+		ArrayList<Sequence> candidate_k;
 		
 		MISValue minMISValue = misValues.get(0); //sorted. First item has minMISValue
 		
 		
-		for(int k=2; (freqSetk_1 = frequentSets.get(k-1)).isNotEmpty() ; k++){	//k,k-1
+		for(int k=2; (freqSetk_1 = objMsgsp.getOfSize(frequentSets, k-1)).size() > 0 ; k++){	//k,k-1
 			
-			candidate_k = new Sequence();
+			candidate_k = new ArrayList<Sequence>();
 			
 			if(k==2){
-				candidate_k = objMsgsp.level2_CandidateGeneration(lSet, misValues, sdc);
+				candidate_k = objMsgsp.level2_CandidateGeneration(lSet, misValues, sdc);				
 			}
 			else{
-				candidate_k = objMsgsp.generic_CandidateGeneration(freqSetk_1);
+				candidate_k = objMsgsp.generic_CandidateGeneration(freqSetk_1, misValues, k-1);
 			}
 			
 			//DEBUG
 			//fileHandler.printSequence(candidate_k);
+			//fileHandler.printData(candidate_k);
 			
 			Sequence seq = fileHandler.getNextSequence(true, dataFilePath);
-			ItemSet candidate_prime = new ItemSet();
+			Sequence candidate_prime = new Sequence();
 			Integer seqCount = 0;
 			
 			while(seq != null){
 				
 				seqCount = seqCount + 1;
 				
-				for(ItemSet candidate : candidate_k.getItemsets()){
+				for(Sequence candidate : candidate_k){ 
 					
 					if(candidate.containedIn(seq)){
 						candidate.incrementCount();
 					}
 					
-					candidate_prime = objMsgsp.getCandidatePrime(candidate_k, candidate, minMISValue);
+					candidate_prime = objMsgsp.getCandidatePrime(candidate, minMISValue);
 					
 					if(candidate_prime != null){				//check if candidate doesn't contain minMISValue item
 						if(candidate_prime.containedIn(seq)){
@@ -88,22 +88,28 @@ public class Main {
 				seq = fileHandler.getNextSequence(false, null);
 			}
 			
-			Sequence frequentSet_k = new Sequence();
+			ArrayList<Sequence> frequentSet_k = new ArrayList<Sequence>();
 			
-			for(ItemSet itemset : candidate_k.getItemsets()){
+			/*for(ItemSet itemset : objMsgsp.getAllItemSets(candidate_k)){
 				if(((float)itemset.getCount()/seqCount) >= minMISValue.getMinItemSupport()){
 					frequentSet_k.addItemSet(itemset);
 				}
+			}*/
+			
+			for(Sequence tmpseq : candidate_k){
+				
+				if(((float)tmpseq.getCount()/seqCount) >= minMISValue.getMinItemSupport())
+					frequentSet_k.add(tmpseq);
 			}
 			
-			frequentSets.add(frequentSet_k);
+			frequentSets.addAll(frequentSet_k);
 		}
-				
-		fileHandler.writeOutputFile();				//Write the output to file
-		
+						
 		//DEBUG
 		fileHandler.printFrequentSets(frequentSets);
-		//fileHandler.printData(frequentSets);
-	}
 
+		fileHandler.writeOutputFile();				//Write the output to file
+		
+		System.out.println("Process Complete");		
+	}
 }

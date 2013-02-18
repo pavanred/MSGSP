@@ -1,7 +1,5 @@
 package algorithm;
 
-import java.util.Comparator;
-
 public class MISValue {
 
 	private Integer itemNo; 

@@ -286,24 +286,68 @@ public class FileHandler {
 
 	public void printFrequentSets(ArrayList<Sequence> frequentSets) {
 		
-		for(int i=1; i < frequentSets.size(); i++){
+		ArrayList<Sequence> tmpseq = new ArrayList<Sequence>();
+		
+		for(int i=1; (tmpseq = getOfSize(frequentSets, i)).size() > 0 ; i++){
 			
-			ArrayList<ItemSet> itemsets = frequentSets.get(i).getItemsets();
+			System.out.println("The number of length " + i + " sequential patterns is " + tmpseq.size());
 			
-			System.out.println("The number of length " + i + " sequential patterns is " + itemsets.size());
-			
-			for(ItemSet itemset : itemsets){
-								
-				System.out.print("Pattern : < {");
+			for(Sequence seq : tmpseq){
 				
-				for(Integer item : itemset.getItems()){
-					System.out.print(item + ",");
-				}
+				System.out.print("<");
 				
-				System.out.print("}> Count : " + itemset.getCount());
-				System.out.print("\n");
+				for(ItemSet itemset : seq.getItemsets()){
+					
+					System.out.print("{");
+					
+					for(int j=0; j < itemset.getItems().size(); j++){
+						
+						if(j == itemset.getItems().size() - 1){
+							System.out.print(itemset.getItems().get(j));
+						}
+						else{
+							System.out.print(itemset.getItems().get(j) + ",");
+						}						
+					}
+					
+					System.out.print("}");
+				}	
+				
+				System.out.print("> Count : " + seq.getCount() + " \n");
+			}
+			
+			
+		}
+	}
+	
+	public ArrayList<Sequence> getOfSize(ArrayList<Sequence> frequentSets, int size) {
+		
+		ArrayList<Sequence> setOfSize = new ArrayList<Sequence>();
+		
+		for(Sequence seq : frequentSets){
+			if(seq.getItemsets().size() == size){
+				setOfSize.add(seq);
 			}
 		}
 		
+		return setOfSize;
 	}
 }
+
+
+/*
+ArrayList<ItemSet> itemsets = frequentSets.get(i).getItemsets();
+
+System.out.println("The number of length " + i + " sequential patterns is " + itemsets.size());
+
+for(ItemSet itemset : itemsets){
+					
+	System.out.print("Pattern : < {");
+	
+	for(Integer item : itemset.getItems()){
+		System.out.print(item + ",");
+	}
+	
+	System.out.print("}> Count : " + itemset.getCount());
+	System.out.print("\n");
+*/
