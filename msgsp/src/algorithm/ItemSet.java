@@ -6,59 +6,37 @@ public class ItemSet {
 
 	private ArrayList<Integer> items;
 	
-	public ItemSet(){
-		this.items = new ArrayList<Integer>();
+	/**
+     * Constructor
+     * @param allItems list of all items in the ItemSet
+     */
+    protected ItemSet(ArrayList<Integer> allItems){    	
+    	this.items = allItems;
+    }
+    
+    /**
+     * Constructor
+     */
+    protected ItemSet(){    	
+    	this.items = new ArrayList<Integer>();
+    }
+    
+    /**
+     * Add Item to the existing list
+     * @param itemNo item number
+     */
+	public void addItem(Integer itemNo){
+		this.items.add(itemNo);
 	}
-	
-	public void setItems(ArrayList<Integer> _items){
+    
+    //Getter Setter
+    public void setItems(ArrayList<Integer> _items){
 		
-		items = _items;		
+		this.items = _items;		
 	}
 	
 	public ArrayList<Integer> getItems(){
 		
-		return items;
-	}	
-	
-	public void addItem(Integer item){
-		this.items.add(item);
-	}
-
-	public boolean checkEquals(ItemSet s_is) {
-		
-		boolean checkEquals = false;
-		
-		if(this.items.size() == s_is.getItems().size()){
-		
-			for(int i=0; i< this.items.size(); i++){
-				
-				if(this.items.get(i) == s_is.getItems().get(i)){
-					checkEquals = true;
-				}
-				else{
-					checkEquals = false;
-					break;
-				}
-			}
-			
-		}		
-		
-		return checkEquals;
-	}
-	
-	public boolean isSuperSetOf(ItemSet is){
-		
-		boolean isSuperSetOf = false;
-		
-		for(Integer it : is.getItems()){
-			if(this.items.contains(it))
-				isSuperSetOf = true;
-			else{
-				isSuperSetOf = false;
-				break;
-			}
-		}
-		
-		return isSuperSetOf;		
+		return this.items;
 	}
 }

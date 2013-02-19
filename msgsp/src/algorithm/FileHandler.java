@@ -1,8 +1,13 @@
 package algorithm;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 
 public class FileHandler {
@@ -10,86 +15,29 @@ public class FileHandler {
 	private Integer head = 0;
 	private BufferedReader nextReader;
 	
-	@Deprecated
-	protected ArrayList<Sequence> getInputData(String inputFilePath){
-		
-		BufferedReader reader;
-		ArrayList<Sequence> data = new ArrayList<Sequence>();
-		
-		System.out.println("Reading input data...");
-				
-		try {
-			
-			reader = new BufferedReader(new FileReader(inputFilePath));
-			
-			String currentLine;
-			Sequence sequence  = new Sequence();
-			ItemSet itemset;
-			ArrayList<Integer> items;
-			
-			while ((currentLine = reader.readLine()) != null) {
-	            
-				sequence = new Sequence();
-				
-				currentLine = currentLine.replace("<", "");
-				currentLine = currentLine.replace(">", "");
-				currentLine = currentLine.replace("{", "");
-				
-				String[] splitItemSets = currentLine.split("}");
-								
-				for(String tempItemSet : splitItemSets){
-					
-					itemset = new ItemSet();
-					items = new ArrayList<Integer>();
-					
-					String[] splitItems = tempItemSet.split(",");
-					
-					for(String tempItem : splitItems){
-						
-						items.add(Integer.parseInt(tempItem.trim()));						
-					}
-					
-					itemset.setItems(items);
-					sequence.addItemSet(itemset);
-				}
-				
-				data.add(sequence);	
-			 }
-			
-			reader.close();
-			
-		} catch (FileNotFoundException e) {
-
-			//TODO : log error
-			System.out.println("input data file not found");
-			
-		} catch (Exception e){
-			
-			//TODO : log error
-			System.out.println("Error - Reading input data file");
-		}		
-		
-		return data;
-	}
-	
-	protected ArrayList<MISValue> getMISValues(String parameterFilePath){
+	/**
+	 * Reads from parameter file and returns a list of items
+	 * @param  parameterFilePath - parameter file path 
+	 * @return list of Items
+	 */
+	protected ArrayList<Item> getMISValues(String parameterFilePath){
 
 		BufferedReader reader;	
-		ArrayList<MISValue> misValues = new ArrayList<MISValue>();
+		ArrayList<Item> items = new ArrayList<Item>();
 		
-		System.out.println("Reading MIS values...");
+		System.out.println("Reading item data...");
 		
 		try {
 			
 			reader = new BufferedReader(new FileReader(parameterFilePath));
 			String currentLine;
-			MISValue tempMISValue;
+			Item tempitem;
 			
 			while ((currentLine = reader.readLine()) != null) {
 				
 				if(currentLine.contains("MIS")){
 					
-					tempMISValue = new MISValue();
+					tempitem = new Item();
 					
 					String tempLine = currentLine;
 					
@@ -97,35 +45,38 @@ public class FileHandler {
 					Integer startBracketPos = tempLine.indexOf('(');
 					Integer endBracketPos = tempLine.indexOf(')');
 					
-					tempMISValue.setitemNo(Integer.parseInt(tempLine.substring(startBracketPos + 1, endBracketPos)));
+					tempitem.setItemNo(Integer.parseInt(tempLine.substring(startBracketPos + 1, endBracketPos)));
 					
 					tempLine = currentLine;
 					
-					tempMISValue.setMinItemSupport(Float.parseFloat(tempLine.substring(equalPos + 1).trim()));
+					tempitem.setMinItemSupport(Float.parseFloat(tempLine.substring(equalPos + 1).trim()));
 
-					misValues.add(tempMISValue);					
+					items.add(tempitem);					
 				} 				
 			}
 			
 			reader.close();
 			
 		} catch (FileNotFoundException e) {
-	
-			//TODO : log error
-			System.out.println("input data file not found");
+
+			System.out.println("[Error] Parameter file not found");
 			
 		} catch (Exception e){
-			
-			//TODO : log error
-			System.out.println("Error - Reading MIS values");
+
+			System.out.println("[Error] Reading parameter file values");
 		}	
 		
-		return misValues;
+		return items;
 	}
 	
-	protected Double getSDC(String parameterFilePath){
+	/**
+	 * Reads from support difference constraint from the parameter file
+	 * @param  parameterFilePath - parameter file path 
+	 * @return support difference constraint
+	 */
+	protected float getSDC(String parameterFilePath){
 		
-		double sdc = 0;		
+		float sdc = 0;		
 		BufferedReader reader;	
 		
 		System.out.println("Reading SDC...");
@@ -140,28 +91,99 @@ public class FileHandler {
 				if(currentLine.contains("SDC")){
 
 					Integer equalPos = currentLine.indexOf('=');
-					sdc = Double.parseDouble(currentLine.substring(equalPos + 1).trim());			
+					sdc = Float.parseFloat(currentLine.substring(equalPos + 1).trim());			
 				}			
 			}
 			
 			reader.close();
 			
 		} catch (FileNotFoundException e) {
-	
-			//TODO : log error
-			System.out.println("input data file not found");
+
+			System.out.println("[Error] Parameter file not found");
 			
 		} catch (Exception e){
 			
-			//TODO : log error
-			System.out.println("Error - Reading SDC value");
+			System.out.println("[Error] Reading SDC value");
 		}	
 		
 		return sdc;
 	}
 	
-	protected Sequence getNextSequence(boolean resetHead, String inputFilePath){
+	/**
+	 * Write list of sequences to output file
+	 * @param  frequentSequences - list of sequences
+	 * @param outputFilePath - path of the output file
+	 */
+	protected void writeOutput(ArrayList<Sequence> frequentSequences, String outputFilePath){
+				
+		ArrayList<Sequence> tmpseq = new ArrayList<Sequence>();
+		
+		try {
 			
+			File file = new File(outputFilePath);
+			
+			if(file.exists()){
+				file.delete();
+			}
+			
+			BufferedWriter output = new BufferedWriter(new FileWriter(file));		
+		
+			for(int i=1; (tmpseq = Utilities.getOfSize(frequentSequences, i)).size() > 0 ; i++){
+				
+				System.out.println("");
+				System.out.println("The number of length " + i + " sequential patterns is " + tmpseq.size());
+				output.write(new Timestamp(new java.util.Date().getTime()).toString());
+				output.write("");
+				output.write("The number of length " + i + " sequential patterns is " + tmpseq.size());
+				
+				for(Sequence seq : tmpseq){
+					
+					System.out.print("Pattern : <");
+					output.write("Pattern : <");
+					
+					for(ItemSet itemset : seq.getItemsets()){
+						
+						System.out.print("{");
+						output.write("{");
+						
+						for(int j=0; j < itemset.getItems().size(); j++){
+							
+							if(j == itemset.getItems().size() - 1){
+								System.out.print(itemset.getItems().get(j));
+								output.write(itemset.getItems().get(j).toString());
+							}
+							else{
+								System.out.print(itemset.getItems().get(j) + ",");
+								output.write(itemset.getItems().get(j) + ",");
+							}						
+						}
+						
+						System.out.print("}");
+						output.write("}");
+					}	
+					
+					System.out.print("> Count : " + seq.getCount() + " \n");
+					output.write("> Count : " + seq.getCount() + " \n");
+				}	
+			}
+			
+			output.close();
+			System.out.println("");
+			System.out.println("Process Complete!");
+		
+		} catch (IOException e) {
+			
+			System.out.println("[Error] Output file write operation");
+		}
+	}
+
+	/**
+	 * Read the next sequence from the data file
+	 * @param resetHead - true if the data file should be parsed from the start	 * 
+	 * @param dataFilePath - path of the data file
+	 */
+	protected Sequence getNextSequence(boolean resetHead, String dataFilePath){
+		
 		String currentLine;
 		Sequence sequence = new Sequence();
 		ItemSet itemset;
@@ -171,11 +193,11 @@ public class FileHandler {
 		
 			if(resetHead){
 				head = 0;
-				nextReader = new BufferedReader(new FileReader(inputFilePath));
+				nextReader = new BufferedReader(new FileReader(dataFilePath));
 			}
 		
 			if ((currentLine = nextReader.readLine()) != null) {
-	            
+				
 				sequence = new Sequence();
 				
 				currentLine = currentLine.replace("<", "");
@@ -208,130 +230,15 @@ public class FileHandler {
 			head = head + 1;
 				
 		} catch (FileNotFoundException e) {
-			
-			//TODO : log error
-			System.out.println("input data file not found");
+
+			System.out.println("[Error] Data file not found " + e);
 			
 		} catch (Exception e){
-			
-			//TODO : log error
-			System.out.println("Error - Reading SDC value");
+
+			System.out.println("[Error] Reading data " + e);
 		}
 		
 		return sequence;
 	}
-	
-	protected void writeOutputFile(){
 
-		//TODO: Write to output file
-		System.out.println("writing output to file");
-	}
-	
-	protected void log(String message){
-		//TODO: Logging
-	}
-	
-	protected void printData(ArrayList<Sequence> data){
-		
-		for(Sequence seq : data){
-			
-			System.out.print("<");
-			
-			for(ItemSet itemset : seq.getItemsets()){
-				
-				System.out.print("{");
-				
-				for(Integer item : itemset.getItems()){
-					
-					System.out.print(item + ",");
-				}
-				
-				System.out.print("}");			
-			}
-			
-			System.out.print(">\n");
-		}
-	}
-	
-	protected void printSequence(Sequence seq){
-		
-		System.out.print("<");
-			
-		for(ItemSet itemset : seq.getItemsets()){
-				
-			System.out.print("{");
-				
-			for(Integer item : itemset.getItems()){
-					
-				System.out.print(item + ",");
-			}
-				
-			System.out.print("}");			
-		}
-		
-		System.out.print(">\n");
-	}
-	
-	protected void printMISValues(ArrayList<MISValue> misValues){
-		
-		Integer count = 1;
-		
-		for(MISValue misValue : misValues){			
-			
-			System.out.println("MIS(" + misValue.getItemNo() + ") = " + misValue.getMinItemSupport() + " -- "
-					+ misValue.getActualSupport() + "--" + misValue.getSupportCount());
-			count = count+1;
-		}
-	}
-
-	public void printFrequentSets(ArrayList<Sequence> frequentSets) {
-		
-		ArrayList<Sequence> tmpseq = new ArrayList<Sequence>();
-		
-		for(int i=1; (tmpseq = getOfSize(frequentSets, i)).size() > 0 ; i++){
-			
-			System.out.println("");
-			System.out.println("The number of length " + i + " sequential patterns is " + tmpseq.size());
-			
-			for(Sequence seq : tmpseq){
-				
-				System.out.print("Pattern : <");
-				
-				for(ItemSet itemset : seq.getItemsets()){
-					
-					System.out.print("{");
-					
-					for(int j=0; j < itemset.getItems().size(); j++){
-						
-						if(j == itemset.getItems().size() - 1){
-							System.out.print(itemset.getItems().get(j));
-						}
-						else{
-							System.out.print(itemset.getItems().get(j) + ",");
-						}						
-					}
-					
-					System.out.print("}");
-				}	
-				
-				System.out.print("> Count : " + seq.getCount() + " \n");
-			}
-			
-			
-		}
-	}
-	
-	public ArrayList<Sequence> getOfSize(ArrayList<Sequence> frequentSets, int size) {
-		
-		ArrayList<Sequence> setOfSize = new ArrayList<Sequence>();
-		
-		for(Sequence seq : frequentSets){
-			//if(seq.getItemsets().size() == size){
-			if(seq.getAllItems().size() == size){
-				setOfSize.add(seq);
-			}
-		}
-		
-		return setOfSize;
-	}
 }
