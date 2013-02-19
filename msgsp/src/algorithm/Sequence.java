@@ -147,47 +147,6 @@ public class Sequence {
 		
 		boolean isContainedIn = false;		
 		int i = 0;
-		/*ArrayList<Integer> counts = new ArrayList<Integer>();
-		
-		while(true){
-			
-			for(int c=0; c < this.itemsets.size(); c++){								
-				
-				i = 0;
-				
-				for(int s=0; s < seq.getItemsets().size(); s++){			
-								
-					if(seq.getItemsets().get(s).isSuperSetOf(this.itemsets.get(c))){
-						i = i+1;
-					}					
-				}	
-				
-				counts.set(c, i); 				
-			}			
-		}*/
-		
-		
-		
-		/*if(seq.getItemsets().containsAll(this.itemsets)){
-			isContainedIn = true;
-		}
-		else{
-			isContainedIn = false;
-		}*/
-		
-		/*for(ItemSet is : this.itemsets){			
-			for(ItemSet s_is : seq.getItemsets()){
-				
-				if(is.checkEquals(s_is)){
-					count++;
-				}				
-			}
-		}
-		
-		if(count == this.itemsets.size())
-			isContainedIn = true;
-		else
-			isContainedIn = false;*/
 		
 		if(seq.getAllItems().containsAll(this.getAllItems()))
 			isContainedIn = true;
@@ -215,32 +174,6 @@ public class Sequence {
 		else
 			isContainedIn = false;
 			---------------------*/
-		
-		/*ArrayList<Integer> done_s = new ArrayList<Integer>();
-		ArrayList<Integer> done_c = new ArrayList<Integer>();
-		
-		for(int c=0; c < this.itemsets.size(); c++){
-			
-			if(done_s.contains(c))
-				continue;
-			
-			for(int s=0; s < seq.getItemsets().size(); s++){			
-			
-				if(done_c.contains(s))
-					continue;
-				
-				if(seq.getItemsets().get(s).getItems().containsAll(this.itemsets.get(c).getItems())){
-					done_s.add(s);
-					done_c.add(c);
-				}
-				
-			}
-		}
-			
-		if(done_c.size() == this.itemsets.size())
-			isContainedIn = true;
-		else
-			isContainedIn = false; */
 		
 		return isContainedIn;
 	}

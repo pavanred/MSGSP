@@ -335,21 +335,3 @@ public class FileHandler {
 		return setOfSize;
 	}
 }
-
-
-/*
-ArrayList<ItemSet> itemsets = frequentSets.get(i).getItemsets();
-
-System.out.println("The number of length " + i + " sequential patterns is " + itemsets.size());
-
-for(ItemSet itemset : itemsets){
-					
-	System.out.print("Pattern : < {");
-	
-	for(Integer item : itemset.getItems()){
-		System.out.print(item + ",");
-	}
-	
-	System.out.print("}> Count : " + itemset.getCount());
-	System.out.print("\n");
-*/
