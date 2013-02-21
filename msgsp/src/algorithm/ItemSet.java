@@ -6,7 +6,7 @@ public class ItemSet {
 
 	private ArrayList<Integer> items;
 	
-	/**
+	/*
      * Constructor
      * @param allItems list of all items in the ItemSet
      */
@@ -14,14 +14,14 @@ public class ItemSet {
     	this.items = allItems;
     }
     
-    /**
+    /*
      * Constructor
      */
     protected ItemSet(){    	
     	this.items = new ArrayList<Integer>();
-    }
-    
-    /**
+    }    
+        
+    /*
      * Add Item to the existing list
      * @param itemNo item number
      */

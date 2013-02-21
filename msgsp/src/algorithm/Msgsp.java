@@ -10,7 +10,7 @@ public class Msgsp {
 	private String dataFilePath;
 	private float SDC;
 	
-	/**
+	/*
      * MSGSP constructor
      * @param allItems list of all items 
      * @param dataFilePath path of the data file
@@ -23,12 +23,13 @@ public class Msgsp {
     	this.SDC = sdc;
     }  
 
-    /**
+    /*
      * MSGSP algorithm implementation
      * @return list of association rule sequences
      */
     public ArrayList<Sequence> main(){
     	
+    	FileHandler fileHandler = new FileHandler();
     	ArrayList<Integer> seedSet;
     	ArrayList<Sequence> freqSet1;
     	ArrayList<Sequence> frequentSeq = new ArrayList<Sequence>();
@@ -46,18 +47,131 @@ public class Msgsp {
     		candidate_k = new ArrayList<Sequence>();
     		
     		if(k==2){
-				//candidate_k = level2_CandidateGeneration(seedSet);				
+				candidate_k = level2_CandidateGeneration(seedSet, frequentSeq);				
 			}
 			else{
 				//candidate_k = objMsgsp.generic_CandidateGeneration(freqSetk_1, misValues, k-1, sdc);
 			}
     		
+    		Sequence seq = fileHandler.getNextSequence(true, this.dataFilePath);
+
+			int seqCount = 0;
+			
+			while(seq != null){
+				
+				seqCount = seqCount + 1;
+				
+				for(Sequence candidate : candidate_k){ 
+
+					if(candidate.containedIn(seq)){
+						candidate.incrementCount();
+					}				
+				}		
+				
+				seq = fileHandler.getNextSequence(false, null);
+			}
+			
+			ArrayList<Sequence> frequentSet_k = new ArrayList<Sequence>();
+			
+			for(Sequence tmpseq : candidate_k){				
+
+				if(((float)tmpseq.getCount()/seqCount) > tmpseq.getMinMIS(this.allItems))
+					frequentSet_k.add(tmpseq);				
+			}
+    		
+    		frequentSeq.addAll(frequentSet_k);    	
     	}
     	
-    	return freqSet1;
+    	return frequentSeq;
     }
     
-    /**
+    /*
+     * Generates level 2 candidates
+     * @param seedSet - seeds generated L
+     * @param frequentSeq - F1
+     * @return level 2 candidates
+     */
+    public ArrayList<Sequence> level2_CandidateGeneration(ArrayList<Integer> seedSet, ArrayList<Sequence> frequentSeq){
+    	
+    	ArrayList<Sequence> candidate = new ArrayList<Sequence>();
+		
+        for (int i=0; i< seedSet.size();i++){    
+        	
+             for (int j=i;j< seedSet.size();j++){
+            	 
+            	 if(i != j){
+            	 
+	            	 Item itemi = Utilities.getItemByItemNo(seedSet.get(i), this.allItems);
+	            	 Item itemj = Utilities.getItemByItemNo(seedSet.get(j), this.allItems);
+	            	 
+	            	 float supportDifference =(itemj.getActualSupport() - itemi.getActualSupport());
+	            	 
+	            	 if(( itemi.getActualSupport() >= itemi.getMinItemSupport() && itemj.getActualSupport() >= itemj.getMinItemSupport()) && Math.abs(supportDifference) <= this.SDC)  {
+	                	                		 
+	                	 Sequence seq1 = new Sequence();         
+		                 ItemSet is1 = new ItemSet();         
+		                 is1.addItem(itemi.getItemNo()); 	                     
+		                 seq1.addItemSet(is1);                
+		                     
+		                 ItemSet is2 = new ItemSet();         
+		                 is2.addItem(itemj.getItemNo());     
+		                 seq1.addItemSet(is2);                
+		                        
+		                 candidate.add(seq1);                         //<{x},{y}> 
+	
+	                     Sequence seq2 = new Sequence();         
+		                 ItemSet is3 = new ItemSet();        
+		                 is3.addItem(itemi.getItemNo()); 
+		                 is3.addItem(itemj.getItemNo());     
+		                 seq2.addItemSet(is3);                //<{x,y}>
+		
+		                 candidate.add(seq2); 
+	            	 }
+	             }
+             }        
+        }
+        
+        candidate = level2_pruneCandidate(candidate,frequentSeq);
+        
+    	return candidate;
+    }
+    
+    /*
+     * Pruning candidates
+     * @param candidate - sequence of k=2 candidates generated
+     * @param frequentSeq - F1
+     * @return level 2 candidates
+     */
+    private ArrayList<Sequence> level2_pruneCandidate(ArrayList<Sequence> candidate, ArrayList<Sequence> frequentSeq) {
+		
+    	ArrayList<Integer> frequentFlag = new ArrayList<Integer>();
+    	ArrayList<Sequence> pruned_candidate = new ArrayList<Sequence>();
+    		
+    	for(Sequence seq : candidate){
+    	    		
+    		for(Sequence frSeq : frequentSeq){
+    			
+    			if(frequentFlag.size() < 2){
+    			
+	    			if(frSeq.getAllItems().contains(seq.getAllItems().get(0)))
+	    				frequentFlag.add(0);
+	    			
+	    			if(frSeq.getAllItems().contains(seq.getAllItems().get(1)))
+	    				frequentFlag.add(1);
+    			}
+    			else{
+    				pruned_candidate.add(seq);
+    				frequentFlag = new ArrayList<Integer>();
+    			}
+     		}
+    		
+    		frequentFlag = new ArrayList<Integer>();
+    	}
+    	
+		return pruned_candidate;
+	}
+
+	/*
      * Compute the frequent set 1 from the seed set L and 
      * go through the data to update the counts of each set
      * @return list of association rule sequences
@@ -114,7 +228,7 @@ public class Msgsp {
 		return frequentset1;
 	}
     
-    /**
+    /*
      * Initial pass over the data to generate the seed set L
      * @return list of item numbers
      */
@@ -145,7 +259,7 @@ public class Msgsp {
 		return seedSet;
 	}
 
-    /**
+    /*
      * Compute the actual item supports from the data
      */
     public void computeActualItemSupport(){		
@@ -179,7 +293,7 @@ public class Msgsp {
 		}
 	}
     
-    /**
+    /*
      * Sort Items based on minimum support values
      */
     public void sortMinSupportValue(){		
@@ -187,7 +301,7 @@ public class Msgsp {
 	    Collections.sort(this.allItems, new ItemComparator());
 	}
     
-    /**
+    /*
      * Custom comparator for Items based on MIS   
      */
   	public class ItemComparator implements Comparator<Item> {

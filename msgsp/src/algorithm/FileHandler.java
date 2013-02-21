@@ -15,7 +15,7 @@ public class FileHandler {
 	private Integer head = 0;
 	private BufferedReader nextReader;
 	
-	/**
+	/*
 	 * Reads from parameter file and returns a list of items
 	 * @param  parameterFilePath - parameter file path 
 	 * @return list of Items
@@ -69,7 +69,7 @@ public class FileHandler {
 		return items;
 	}
 	
-	/**
+	/*
 	 * Reads from support difference constraint from the parameter file
 	 * @param  parameterFilePath - parameter file path 
 	 * @return support difference constraint
@@ -109,7 +109,7 @@ public class FileHandler {
 		return sdc;
 	}
 	
-	/**
+	/*
 	 * Write list of sequences to output file
 	 * @param  frequentSequences - list of sequences
 	 * @param outputFilePath - path of the output file
@@ -127,14 +127,18 @@ public class FileHandler {
 			}
 			
 			BufferedWriter output = new BufferedWriter(new FileWriter(file));		
-		
+			
+			output.write(new Timestamp(new java.util.Date().getTime()).toString());
+			output.write("\n");
+			
 			for(int i=1; (tmpseq = Utilities.getOfSize(frequentSequences, i)).size() > 0 ; i++){
 				
 				System.out.println("");
 				System.out.println("The number of length " + i + " sequential patterns is " + tmpseq.size());
-				output.write(new Timestamp(new java.util.Date().getTime()).toString());
-				output.write("");
+				
+				
 				output.write("The number of length " + i + " sequential patterns is " + tmpseq.size());
+				output.write("\n");
 				
 				for(Sequence seq : tmpseq){
 					
@@ -177,7 +181,7 @@ public class FileHandler {
 		}
 	}
 
-	/**
+	/*
 	 * Read the next sequence from the data file
 	 * @param resetHead - true if the data file should be parsed from the start	 * 
 	 * @param dataFilePath - path of the data file

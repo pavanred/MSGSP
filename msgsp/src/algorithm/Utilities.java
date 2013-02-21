@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public class Utilities {
 
-	/**
+	/*
 	 * returns all sequences of a specific size
 	 * @param frequentSequences - list of sequences
 	 * @param size specified size of the sequences
@@ -23,7 +23,7 @@ public class Utilities {
 		return setOfSize;
 	}
 	
-	/**
+	/*
 	 * get the Item from Item number
 	 * @param itemNo - Item number
 	 * @param allItems list of all Items
