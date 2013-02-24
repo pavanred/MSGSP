@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public class Utilities {
 
-	/*
+	/**
 	 * returns all sequences of a specific size
 	 * @param frequentSequences - list of sequences
 	 * @param size specified size of the sequences
@@ -23,7 +23,7 @@ public class Utilities {
 		return setOfSize;
 	}
 	
-	/*
+	/**
 	 * get the Item from Item number
 	 * @param itemNo - Item number
 	 * @param allItems list of all Items
@@ -39,6 +39,23 @@ public class Utilities {
 		}
 			
 		return item;
-	}	
+	}
+	
+	public static Double getSupportDifference(Sequence candidate, ArrayList<Item> allItems) {
+		
+		Float minMIS = allItems.get(allItems.size() - 1).getMinItemSupport();
+		Float maxMIS = 0.0f;
+		Float tmp = 0.0f;
+		
+		for(Integer item : candidate.getAllItems()){
+			if((tmp = getItemByItemNo(item, allItems).getMinItemSupport()) < minMIS)
+				minMIS = tmp;
+			
+			if((tmp = getItemByItemNo(item, allItems).getMinItemSupport()) > maxMIS)
+				maxMIS = tmp;
+		}
+		
+		return (double) (maxMIS - minMIS);		
+	}
 	
 }

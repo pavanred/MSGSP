@@ -1,13 +1,14 @@
 package algorithm;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 public class Sequence {
 	
 	private ArrayList<ItemSet> itemsets;
 	private Integer count;
 	
-	/*
+	/**
 	 * Constructor
      */
     protected Sequence(){    	
@@ -15,7 +16,7 @@ public class Sequence {
 		 this.count = 0;
 	 }
     
-    /*
+    /**
 	 * Copy Constructor
      */
     protected Sequence(Sequence s){    	
@@ -33,7 +34,7 @@ public class Sequence {
     	}    	
 	 }
 	
-	/*
+	/**
 	 * Add an ItemSet to the Sequence
 	 * @param itemset - list of Items	 
 	 */
@@ -41,7 +42,7 @@ public class Sequence {
 		this.itemsets.add(itemset);
 	}
 	
-	/*
+	/**
 	 * returns all items in a sequence
 	 */
 	public ArrayList<Integer> getAllItems(){
@@ -55,14 +56,14 @@ public class Sequence {
 		return allItems;
 	}
 	
-	/*
+	/**
 	 * increments count of the sequence by 1
 	 */
 	public void incrementCount(){
 		this.count = this.count + 1;
 	}
 	
-	/*
+	/**
 	 * Gets the minimum MIS in a given sequence
 	 * @param list of all items
 	 * @return the minimum MIS value
@@ -82,7 +83,7 @@ public class Sequence {
 	}
 	
 	
-	/*
+	/**
 	 * Checks if a sequence is contained in any k-1 subsequence of another sequence
 	 * @param seq the sequence that is to be checked for
 	 * @return true or false based on whether it is contained or not 
@@ -92,9 +93,9 @@ public class Sequence {
 		ArrayList<Integer> parentIndexFlag = new ArrayList<Integer>();
 		ArrayList<Integer> subIndexFlag = new ArrayList<Integer>();		
 		
-		for(int j=0; j< this.itemsets.size(); j++){
+		for(int i=0; i < seq.getItemsets().size(); i++){
 		
-			for(int i=0; i < seq.getItemsets().size(); i++){
+			for(int j=0; j< this.getItemsets().size(); j++){
 				
 				if(!parentIndexFlag.contains(i) && !subIndexFlag.contains(j)){
 				
@@ -110,6 +111,110 @@ public class Sequence {
 			return true;
 		else
 			return false;
+	}
+	
+	/**
+	 * Returns the list of all distinct items
+	 * @return list of all distinct items
+	 */
+	public ArrayList<Integer> getAllDistinctItems() {
+		
+		ArrayList<Integer> allItems = new ArrayList<Integer>();
+		
+		for(ItemSet itemset : this.itemsets){
+			allItems.addAll(itemset.getItems());
+		}	
+		
+		//removing duplicates 
+		return new ArrayList<Integer>(new HashSet<Integer>(allItems));
+		
+	}
+	
+	/**
+	 * Is the first item having the lowest minimum item support
+	 * @return true or false
+	 */
+	public boolean isFirstItemLowestMIS(ArrayList<Item> allItems) {
+		
+		boolean isFirstItemLowestMIS = false;
+		
+		if(this.getAllItems().size() <= 0)
+			return isFirstItemLowestMIS;
+		
+		Integer firstItemNo = this.getAllItems().get(0);
+		
+		Item firstItem = Utilities.getItemByItemNo(firstItemNo, allItems);
+		Float minMISVal = Utilities.getItemByItemNo(allItems.size() - 1, allItems).getMinItemSupport();
+		Float tmpMISVal = 0.0f;
+		
+		for(int i=1; i < this.getAllItems().size(); i++){
+			if(minMISVal > (tmpMISVal = Utilities.getItemByItemNo(this.getAllItems().get(i), allItems).getMinItemSupport())){
+				minMISVal = tmpMISVal;
+			}
+		}
+		
+		if(firstItem.getMinItemSupport() < minMISVal){
+			isFirstItemLowestMIS = true;
+		}
+		
+		return isFirstItemLowestMIS;
+	}
+	
+	/**
+	 * Is the last item having the lowest minimum item support
+	 * @return true or false
+	 */
+	public boolean isLastItemLowestMIS(ArrayList<Item> allItems) {
+		
+		boolean isLastItemLowestMIS = false;
+		
+		if(this.getAllItems().size() <= 0)
+			return isLastItemLowestMIS;
+		
+		Integer lastItemNo = this.getAllItems().get(this.getAllItems().size() - 1);
+		
+		Item lastItem = Utilities.getItemByItemNo(lastItemNo, allItems);
+		Float minMISVal = Utilities.getItemByItemNo(allItems.size() - 1, allItems).getMinItemSupport();
+		Float tmpMISVal = 0.0f;
+		
+		for(int i=0; i < this.getAllItems().size() - 1; i++){
+			if(minMISVal > (tmpMISVal = Utilities.getItemByItemNo(this.getAllItems().get(i), allItems).getMinItemSupport())){
+				minMISVal = tmpMISVal;
+			}
+		}
+		
+		if(lastItem.getMinItemSupport() < minMISVal){
+			isLastItemLowestMIS = true;
+		}
+		
+		
+		return isLastItemLowestMIS;		
+	}
+	
+	/**
+	 * Checks if the last itemset is a single item
+	 * @return true or false
+	 */
+	public boolean isSeperateItemSet(ArrayList<Integer> tmpS2) {
+		
+		boolean isSeperateItemSet = false;
+		
+		ItemSet lastItemSet = this.getItemsets().get(this.getItemsets().size() - 1);
+		
+		if(lastItemSet.getItems().size() == 1)
+			isSeperateItemSet = true;
+		else 
+			isSeperateItemSet = false;
+		
+		return isSeperateItemSet;		
+	}
+	
+	/**
+	 * returns the last item of the sequence
+	 * @return last item
+	 */
+	public Integer getLastItem() {		
+		return this.getAllItems().get(this.getAllItems().size()-1);
 	}
 	
 	//Getter Setter
@@ -129,5 +234,4 @@ public class Sequence {
 		
 		return this.itemsets;
 	}
-
 }

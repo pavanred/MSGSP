@@ -10,7 +10,7 @@ public class Msgsp {
 	private String dataFilePath;
 	private float SDC;
 	
-	/*
+	/**
      * MSGSP constructor
      * @param allItems list of all items 
      * @param dataFilePath path of the data file
@@ -23,7 +23,7 @@ public class Msgsp {
     	this.SDC = sdc;
     }  
 
-    /*
+    /**
      * MSGSP algorithm implementation
      * @return list of association rule sequences
      */
@@ -50,7 +50,7 @@ public class Msgsp {
 				candidate_k = level2_CandidateGeneration(seedSet, frequentSeq);				
 			}
 			else{
-				//candidate_k = objMsgsp.generic_CandidateGeneration(freqSetk_1, misValues, k-1, sdc);
+				candidate_k = generic_CandidateGeneration(freqSetk_1, k-1);
 			}
     		
     		Sequence seq = fileHandler.getNextSequence(true, this.dataFilePath);
@@ -85,7 +85,68 @@ public class Msgsp {
     	return frequentSeq;
     }
     
-    /*
+    /**
+     * Generates candidates for any level >2
+     * @param freqSetk_1 - k-1th frequent set
+     * @param size - size of the sequence
+     * @return candidate sequences
+     */
+    public ArrayList<Sequence> generic_CandidateGeneration(ArrayList<Sequence> freqSetk_1, Integer size){
+    	
+    	ArrayList<Sequence> candidateSeq = new ArrayList<Sequence>();
+		Sequence candidate = new Sequence();
+		ArrayList<Integer> tmpS1 = new ArrayList<Integer>();
+		ArrayList<Integer> tmpS2 = new ArrayList<Integer>();
+		
+		for(Integer l=0; l < freqSetk_1.size(); l++ ){
+			
+			for(Integer h=l; h < freqSetk_1.size(); h++){
+				
+				if(l != h){
+				
+					Sequence s1 = freqSetk_1.get(l);
+					Sequence s2 = freqSetk_1.get(h);
+					
+					tmpS1 = new ArrayList<Integer>(s1.getAllItems());
+					tmpS2 = new ArrayList<Integer>(s2.getAllItems());
+					
+					if(s1.isFirstItemLowestMIS(this.allItems)){						
+						
+						candidateSeq.addAll(joinStep_FirstLowest(s1, s2, tmpS1, tmpS2, size));						
+					}
+					else if(s2.isLastItemLowestMIS(this.allItems)){
+						
+						candidateSeq.addAll(joinStep_LastLowest(s1, s2, tmpS1, tmpS2, size));	
+					}
+					else{	
+						
+						if((candidate = joinStep(s1, s2)) != null)
+							candidateSeq.add(candidate);
+					}						
+				}				
+			}			
+		}
+		
+		candidateSeq = pruneCandidates(candidateSeq, freqSetk_1, size);
+    	
+    	return candidateSeq;
+    }
+    
+    /**
+     * prunes the candidates
+     * @param candidateSeq - candidate sequence to be pruned
+     * @param freqSetk_1 - k-1th frequent set
+     * @param size - size of the sequence
+     * @return pruned candidates
+     */
+    private ArrayList<Sequence> pruneCandidates(ArrayList<Sequence> candidateSeq, ArrayList<Sequence> freqSetk_1,Integer size) {
+
+    	
+    	
+		return candidateSeq;
+	}
+
+	/**
      * Generates level 2 candidates
      * @param seedSet - seeds generated L
      * @param frequentSeq - F1
@@ -102,8 +163,8 @@ public class Msgsp {
             	 if(i != j){
             	 
 	            	 Item itemi = Utilities.getItemByItemNo(seedSet.get(i), this.allItems);
-	            	 Item itemj = Utilities.getItemByItemNo(seedSet.get(j), this.allItems);
-	            	 
+	            	 Item itemj = Utilities.getItemByItemNo(seedSet.get(j), this.allItems);           	 
+            	 
 	            	 float supportDifference =(itemj.getActualSupport() - itemi.getActualSupport());
 	            	 
 	            	 if(( itemi.getActualSupport() >= itemi.getMinItemSupport() && itemj.getActualSupport() >= itemj.getMinItemSupport()) && Math.abs(supportDifference) <= this.SDC)  {
@@ -136,7 +197,276 @@ public class Msgsp {
     	return candidate;
     }
     
-    /*
+    /**
+     * join step when the first item in the sequence has the lowest minimum item support
+     * @param s1 - sequence 1
+     * @param s2 - sequence 2
+     * @param tmpS1 - temporary S1
+     * @param tmpS2 - temporary S2
+     * @param size- size of the sequence
+     * @return candidate
+     */
+    private ArrayList<Sequence> joinStep_LastLowest(Sequence s1, Sequence s2,ArrayList<Integer> tmpS1, ArrayList<Integer> tmpS2, int size){
+
+		Sequence candidate = new Sequence();
+		ArrayList<Sequence> candidates = new ArrayList<Sequence>();
+		
+		if(condition1(s1,s2) &&  condition2(s1,s2)){
+		
+			if(s2.isSeperateItemSet(tmpS2)){
+				
+				candidate = new Sequence();
+				
+				candidate.setItemsets(s1.getItemsets());
+				ItemSet lastItemSet = new ItemSet();
+				lastItemSet.addItem(s2.getLastItem());
+				
+				candidate.addItemSet(lastItemSet);
+				
+				if(Utilities.getSupportDifference(candidate, this.allItems) <= this.SDC)			
+					candidates.add(candidate);
+				
+				if((size == 2 && s1.getAllItems().size() == 2) && 
+						(Utilities.getItemByItemNo(tmpS2.get(tmpS2.size() - 1), this.allItems).getMinItemSupport() > Utilities.getItemByItemNo(tmpS1.get(tmpS1.size() - 1), this.allItems).getMinItemSupport())) {
+					
+					candidate = new Sequence();
+					
+					for(Integer i=0; i < s1.getItemsets().size(); i++){
+						
+						if(i == s1.getItemsets().size() - 1){
+							
+							ItemSet lastItemSet1 = s1.getItemsets().get(i);
+							lastItemSet1.addItem(s2.getLastItem());
+							
+							candidate.addItemSet(lastItemSet1);
+						}
+						else{
+							candidate.addItemSet(s1.getItemsets().get(i));
+						}										
+					}
+														
+					if(Utilities.getSupportDifference(candidate, this.allItems) <= this.SDC)			
+						candidates.add(candidate);
+				}							
+			}
+			else if(((size == 2 && s1.getAllItems().size() == 2) && 
+					(Utilities.getItemByItemNo(tmpS2.get(tmpS2.size() - 1), this.allItems).getMinItemSupport() > Utilities.getItemByItemNo(tmpS1.get(tmpS1.size() - 1), this.allItems).getMinItemSupport())) 
+					|| (s1.getAllItems().size() > 2)){
+				
+				candidate = new Sequence();
+				
+				for(Integer i=0; i < s1.getItemsets().size(); i++){
+					
+					if(i == s1.getItemsets().size() - 1){
+						
+						ItemSet lastItemSet1 = s1.getItemsets().get(i);
+						lastItemSet1.addItem(s2.getLastItem());
+						
+						candidate.addItemSet(lastItemSet1);
+					}
+					else{
+						candidate.addItemSet(s1.getItemsets().get(i));
+					}										
+				}
+				
+				if(Utilities.getSupportDifference(candidate, this.allItems) <= this.SDC)				
+					candidates.add(candidate);							
+			}
+			
+		}		
+		
+    	return candidates;
+    }
+    
+    /**
+     * join step when the last item in the sequence has the lowest minimum item support
+     * @param s1 - sequence 1
+     * @param s2 - sequence 2
+     * @return candidate
+     */
+    private ArrayList<Sequence> joinStep_FirstLowest(Sequence s1, Sequence s2,ArrayList<Integer> tmpS1, ArrayList<Integer> tmpS2, int size){
+
+		Sequence candidate = new Sequence();
+		ArrayList<Sequence> candidates = new ArrayList<Sequence>();
+		
+		if(condition1(s1,s2) &&  condition2(s1,s2)){
+		
+			if(s2.isSeperateItemSet(tmpS2)){
+				
+				candidate = new Sequence();
+				
+				candidate.setItemsets(s1.getItemsets());
+				ItemSet lastItemSet = new ItemSet();
+				lastItemSet.addItem(s2.getLastItem());
+				
+				candidate.addItemSet(lastItemSet);
+				
+				if(Utilities.getSupportDifference(candidate, this.allItems) <= this.SDC)			
+					candidates.add(candidate);
+				
+				if((size == 2 && s1.getAllItems().size() == 2) && 
+						(Utilities.getItemByItemNo(tmpS2.get(tmpS2.size() - 1), this.allItems).getMinItemSupport() > Utilities.getItemByItemNo(tmpS1.get(tmpS1.size() - 1), this.allItems).getMinItemSupport())) {
+					
+					candidate = new Sequence();
+					
+					for(Integer i=0; i < s1.getItemsets().size(); i++){
+						
+						if(i == s1.getItemsets().size() - 1){
+							
+							ItemSet lastItemSet1 = s1.getItemsets().get(i);
+							lastItemSet1.addItem(s2.getLastItem());
+							
+							candidate.addItemSet(lastItemSet1);
+						}
+						else{
+							candidate.addItemSet(s1.getItemsets().get(i));
+						}										
+					}
+														
+					if(Utilities.getSupportDifference(candidate, this.allItems) <= this.SDC)			
+						candidates.add(candidate);
+				}							
+			}
+			else if(((size == 2 && s1.getAllItems().size() == 2) && 
+					(Utilities.getItemByItemNo(tmpS2.get(tmpS2.size() - 1), this.allItems).getMinItemSupport() > Utilities.getItemByItemNo(tmpS1.get(tmpS1.size() - 1), this.allItems).getMinItemSupport())) 
+					|| (s1.getAllItems().size() > 2)){
+				
+				candidate = new Sequence();
+				
+				for(Integer i=0; i < s1.getItemsets().size(); i++){
+					
+					if(i == s1.getItemsets().size() - 1){
+						
+						ItemSet lastItemSet1 = s1.getItemsets().get(i);
+						lastItemSet1.addItem(s2.getLastItem());
+						
+						candidate.addItemSet(lastItemSet1);
+					}
+					else{
+						candidate.addItemSet(s1.getItemsets().get(i));
+					}										
+				}
+				
+				if(Utilities.getSupportDifference(candidate, this.allItems) <= this.SDC)				
+					candidates.add(candidate);							
+			}
+			
+		}		
+		
+    	return candidates;
+    }
+    
+    /**
+     * Generic join step
+     * @param s1 - sequence 1
+     * @param s2 - sequence 2
+     * @return candidate
+     */
+    private Sequence joinStep(Sequence s1, Sequence s2){
+    	
+		ArrayList<Integer> tmpS1;
+		ArrayList<Integer> tmpS2;
+		Sequence candidate = new Sequence();
+    	
+    	tmpS1 = new ArrayList<Integer>(s1.getAllItems());
+		tmpS2 = new ArrayList<Integer>(s2.getAllItems());
+		
+		if(tmpS1.size() > 0 && tmpS2.size()>0){
+			
+			tmpS1.remove(0);
+			tmpS2.remove(tmpS2.size() - 1);
+			
+			if(tmpS1 == tmpS2){
+				
+				if(s2.isSeperateItemSet(tmpS2)){
+					
+					candidate = new Sequence();
+					
+					candidate.setItemsets(s1.getItemsets());
+					ItemSet lastItemSet = new ItemSet();
+					lastItemSet.addItem(s2.getLastItem());
+					
+					candidate.addItemSet(lastItemSet);
+				}
+				else{
+					candidate = new Sequence();
+					
+					for(Integer i=0; i < s1.getItemsets().size(); i++){
+						
+						if(i == s1.getItemsets().size() - 1){
+							
+							ItemSet lastItemSet = s1.getItemsets().get(i);
+							lastItemSet.addItem(s2.getLastItem());
+							
+							candidate.addItemSet(lastItemSet);
+						}
+						else{
+							candidate.addItemSet(s1.getItemsets().get(i));
+						}										
+					}					
+				}
+				
+				if(Utilities.getSupportDifference(candidate, this.allItems) > this.SDC)						
+					candidate = null;
+			}			
+		}
+    	
+    	return candidate;
+    }
+    
+    /**
+     * Condition 1 in join step
+     * @param s1 - sequence 1
+     * @param s2 - sequence 2
+     * @return true or false
+     */
+    private boolean condition1(Sequence s1, Sequence s2) {
+		
+		boolean isCondition1 = false;
+		
+		ArrayList<Integer> tmpS1 = new ArrayList<Integer>(s1.getAllItems());
+		ArrayList<Integer> tmpS2 = new ArrayList<Integer>(s2.getAllItems());
+				
+		if(tmpS1.size() > 1 && tmpS2.size() > 0){
+			
+			tmpS1.remove(1);
+			tmpS2.remove(tmpS2.size() - 1);
+			
+			if(tmpS1 == tmpS2)
+				isCondition1 = true;
+			else
+				isCondition1 = false;			
+		}
+		
+		return isCondition1;
+	}
+
+    /**
+     * Condition 2 in join step
+     * @param s1 - sequence 1
+     * @param s2 - sequence 2
+     * @return true or false
+     */
+	private boolean condition2(Sequence s1, Sequence s2) {
+		
+		boolean isCondition2 = false;
+		
+		ArrayList<Integer> tmpS1 = new ArrayList<Integer>(s1.getAllItems());
+		ArrayList<Integer> tmpS2 = new ArrayList<Integer>(s2.getAllItems());
+		
+		if(tmpS1.size() > 0 && tmpS2.size() > 0){
+		
+			//if(misValues.get(tmpS2.get(tmpS2.size() - 1)).getMinItemSupport() > misValues.get(tmpS1.get(0)).getMinItemSupport())
+			if(Utilities.getItemByItemNo(tmpS2.get(tmpS2.size() - 1), this.allItems).getMinItemSupport() > Utilities.getItemByItemNo(tmpS1.get(0), this.allItems).getMinItemSupport())
+				isCondition2 = true;
+			else
+				isCondition2 = false;
+		}
+				
+		return isCondition2;
+	}
+    
+    /**
      * Pruning candidates
      * @param candidate - sequence of k=2 candidates generated
      * @param frequentSeq - F1
@@ -171,7 +501,7 @@ public class Msgsp {
 		return pruned_candidate;
 	}
 
-	/*
+	/**
      * Compute the frequent set 1 from the seed set L and 
      * go through the data to update the counts of each set
      * @return list of association rule sequences
@@ -206,8 +536,8 @@ public class Msgsp {
 		Integer seqCount = 0;
 		
 		sequence = fileHandler.getNextSequence(true, dataFilePath);
-		
-		while(sequence != null){
+
+		while(sequence != null){	
 				
 			seqCount = seqCount + 1;
 				
@@ -228,7 +558,7 @@ public class Msgsp {
 		return frequentset1;
 	}
     
-    /*
+    /**
      * Initial pass over the data to generate the seed set L
      * @return list of item numbers
      */
@@ -259,7 +589,7 @@ public class Msgsp {
 		return seedSet;
 	}
 
-    /*
+    /**
      * Compute the actual item supports from the data
      */
     public void computeActualItemSupport(){		
@@ -273,7 +603,7 @@ public class Msgsp {
 			
 			sequenceCount = sequenceCount + 1;
 			
-			for(Integer item : seq.getAllItems()){
+			for(Integer item : seq.getAllDistinctItems()){
 				
 				for(Item itm : this.allItems){
 					
@@ -293,7 +623,7 @@ public class Msgsp {
 		}
 	}
     
-    /*
+    /**
      * Sort Items based on minimum support values
      */
     public void sortMinSupportValue(){		
@@ -301,7 +631,7 @@ public class Msgsp {
 	    Collections.sort(this.allItems, new ItemComparator());
 	}
     
-    /*
+    /**
      * Custom comparator for Items based on MIS   
      */
   	public class ItemComparator implements Comparator<Item> {
