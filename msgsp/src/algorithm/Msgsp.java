@@ -107,7 +107,7 @@ public class Msgsp {
 			
 			for(Integer h=0; h < freqSetk_1.size(); h++){
 				
-				if(l != h){
+				//if(l != h){
 				
 					Sequence s1 = freqSetk_1.get(l);
 					Sequence s2 = freqSetk_1.get(h);
@@ -128,7 +128,7 @@ public class Msgsp {
 						if((candidate = joinStep(s1, s2)) != null)
 							candidateSeq.add(candidate);
 					}						
-				}				
+				//}				
 			}			
 		}
 		
