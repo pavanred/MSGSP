@@ -68,7 +68,40 @@ public class Msgsp {
 
 					if(candidate.containedIn(seq)){
 						candidate.incrementCount();
-					}				
+					}		
+					
+					Sequence newSeq = new Sequence();
+					Integer minMISItem = newSeq.getMinMISItem(this.allItems);
+					boolean done = false;
+					
+					for(ItemSet is : candidate.getItemsets()){
+						
+						ItemSet newIS = new ItemSet();
+						done = false;
+						
+						for(Integer item : is.getItems()){
+							
+							if(item.equals(new Integer(minMISItem))){
+								
+								if(done){
+									newIS.addItem(item);
+								}
+								else{
+									done = true;
+								}
+							}
+							else{
+								newIS.addItem(item);
+							}
+						}
+						
+						newSeq.addItemSet(newIS);
+					}
+					
+
+					if(newSeq.containedIn(seq)){
+						newSeq.incrementCount();
+					}
 				}		
 				
 				seq = fileHandler.getNextSequence(false, null);
@@ -79,7 +112,7 @@ public class Msgsp {
 			for(Sequence tmpseq : candidate_k){				
 
 				if(((float)tmpseq.getCount()/seqCount) > tmpseq.getMinMIS(this.allItems))
-					frequentSet_k.add(tmpseq);				
+					frequentSet_k.add(tmpseq);
 			}
 			
     		frequentSeq.addAll(frequentSet_k);     

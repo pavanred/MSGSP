@@ -111,6 +111,7 @@ public class Sequence {
 			return true;
 		else
 			return false;
+		
 	}
 	
 	/**
