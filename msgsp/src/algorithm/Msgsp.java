@@ -188,6 +188,7 @@ public class Msgsp {
     			
     			for(int j=0; j<subSeq.size() ; j++){
     				
+    				//if(Utilities.ListContains(freqSetk_1, subSeq.get(j), this.allItems)){
     				if(Utilities.ListContains(freqSetk_1, subSeq.get(j))){
     					count = count++;
     				}    				

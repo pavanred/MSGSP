@@ -114,6 +114,7 @@ public class Utilities {
 	public static ArrayList<Sequence> removeDuplicates(ArrayList<Sequence> allseq) {
 		
 		boolean exists = false;
+		ArrayList<Integer> flag = new ArrayList<Integer>();
 		
 		for(int i=0; i<allseq.size(); i++){
 			
@@ -135,22 +136,32 @@ public class Utilities {
 					}
 					
 					if(exists)
-						allseq.remove(j);					
+						flag.add(j);
+						//allseq.remove(j);					
 				}
 			}			
 		}
 		
-		return allseq;
+		ArrayList<Sequence> seq = new ArrayList<Sequence>();
 		
+		for(int i=0; i < allseq.size(); i++){
+					
+			if(!flag.contains(i)){
+				seq.add(allseq.get(i));
+			}
+		}
+		
+		return seq;
 	}
 
 	/**
-	 * checks if a list of sequences contain a sequence
+	 * checks if a list of sequences contain a sequence, skipping the itemsets that dont contain lowest MIS value(pruning)
 	 * @param sequences - list of sequences
 	 * @param seq - sequence to be checked
+	 * @param allItems - list of all items
 	 * @return true or false
 	 */
-	public static boolean ListContains(ArrayList<Sequence> sequences, Sequence seq) {
+	public static boolean ListContains(ArrayList<Sequence> sequences, Sequence seq, ArrayList<Item> allItems) {
 		
 		boolean contains = false;
 		
@@ -159,12 +170,18 @@ public class Utilities {
 			if(s.getAllItems().size() == seq.getAllItems().size() && s.getItemsets().size() == seq.getItemsets().size()){
 				
 				int count=0;
+				int minMISItem = seq.getMinMISItem(allItems);
 				
 				for(int i=0; i< s.getItemsets().size() ; i++){
 					
-					if(s.getItemsets().get(i).getItems().containsAll(seq.getItemsets().get(i).getItems())){
-						count= count+1;
+					if(seq.getItemsets().get(i).getItems().contains(minMISItem)){
+						count = count+1;
 					}					
+					else{
+						if(s.getItemsets().get(i).getItems().containsAll(seq.getItemsets().get(i).getItems())){
+							count= count+1;
+						}	
+					}
 				}		
 				
 				if(count == s.getItemsets().size())
@@ -172,6 +189,37 @@ public class Utilities {
 			}			
 		}
 		
+		return contains;
+	}
+	
+	/**
+	 * checks if a list of sequences contain a sequence
+	 * @param sequences - list of sequences
+	 * @param seq - sequence to be checked
+	 * @return true or false
+	 */
+	public static boolean ListContains(ArrayList<Sequence> sequences, Sequence seq) {
+
+		boolean contains = false;
+
+		for(Sequence s : sequences){
+
+			if(s.getAllItems().size() == seq.getAllItems().size() && s.getItemsets().size() == seq.getItemsets().size()){
+
+				int count=0;
+
+				for(int i=0; i< s.getItemsets().size() ; i++){
+
+					if(s.getItemsets().get(i).getItems().containsAll(seq.getItemsets().get(i).getItems())){
+						count= count+1;
+					}					
+				}		
+
+				if(count == s.getItemsets().size())
+					return true;
+			}			
+		}
+
 		return contains;
 	}	
 }

@@ -217,6 +217,27 @@ public class Sequence {
 		return this.getAllItems().get(this.getAllItems().size()-1);
 	}
 	
+	/**
+	 * gets the minimum MIS item
+	 * @return min MIS item
+	 */
+	public int getMinMISItem(ArrayList<Item> allItems) {
+		
+		Float minMIS = allItems.get(allItems.size() - 1).getMinItemSupport();
+		Float tmp = 0.0f;
+		int itm = 0;
+		
+		for(Integer item : this.getAllDistinctItems()){
+			
+			if((tmp = Utilities.getItemByItemNo(item, allItems).getMinItemSupport()) < minMIS){
+				minMIS = tmp;	
+				itm = item;
+			}
+		}	
+		
+		return itm;
+	}
+	
 	//Getter Setter
 	public Integer getCount(){
 		return this.count;
