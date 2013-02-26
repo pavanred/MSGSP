@@ -72,12 +72,12 @@ public class Utilities {
 	 * @param seq - parent sequence
 	 * @return a list of sequences
 	 */
-	public static ArrayList<Sequence> getsubSequences (Sequence seq){		
+	public static ArrayList<ItemSet> getsubSequences (Sequence seq){		
 		
 		int n = seq.getAllItems().size();
 		int[] masks = new int[n];
 		Sequence newSeq = new Sequence();
-		ArrayList<Sequence> subSequences = new ArrayList<Sequence>();
+		ArrayList<ItemSet> subSequences = new ArrayList<ItemSet>();
 		
 		for(int i=0; i<n;i++){
 			masks[i] = (1<<i);
@@ -93,15 +93,13 @@ public class Utilities {
 				}
 			}
 			
-			if(newList.size() == n-1){
+			if(newList.size() == n-1){				
 				
-				newSeq = new Sequence();
 				ItemSet is = new ItemSet();
 				
-				is.setItems(newList);
-				newSeq.addItemSet(is);
+				is.setItems(newList);				
 				
-				subSequences.add(newSeq);
+				subSequences.add(is);
 			}			
 		}
 		
@@ -128,7 +126,7 @@ public class Utilities {
 						
 						exists = false;
 						
-						if(allseq.get(i).getItemsets().get(k).getItems().equals((allseq.get(j).getItemsets().get(k).getItems()))){
+						if(allseq.get(i).getItemsets().get(k).getItems().containsAll((allseq.get(j).getItemsets().get(k).getItems()))){
 							exists = true;
 						}					
 						else{
@@ -144,5 +142,36 @@ public class Utilities {
 		
 		return allseq;
 		
+	}
+
+	/**
+	 * checks if a list of sequences contain a sequence
+	 * @param sequences - list of sequences
+	 * @param seq - sequence to be checked
+	 * @return true or false
+	 */
+	public static boolean ListContains(ArrayList<Sequence> sequences, Sequence seq) {
+		
+		boolean contains = false;
+		
+		for(Sequence s : sequences){
+			
+			if(s.getAllItems().size() == seq.getAllItems().size() && s.getItemsets().size() == seq.getItemsets().size()){
+				
+				int count=0;
+				
+				for(int i=0; i< s.getItemsets().size() ; i++){
+					
+					if(s.getItemsets().get(i).getItems().containsAll(seq.getItemsets().get(i).getItems())){
+						count= count+1;
+					}					
+				}		
+				
+				if(count == s.getItemsets().size())
+					return true;
+			}			
+		}
+		
+		return contains;
 	}	
 }

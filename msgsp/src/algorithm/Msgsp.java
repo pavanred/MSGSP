@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class Msgsp {
 	
@@ -84,6 +86,7 @@ public class Msgsp {
     	}
     	
     	return Utilities.removeDuplicates(frequentSeq);
+    	//return frequentSeq;
     }
     
     /**
@@ -102,7 +105,7 @@ public class Msgsp {
 		
 		for(Integer l=0; l < freqSetk_1.size(); l++ ){
 			
-			for(Integer h=l; h < freqSetk_1.size(); h++){
+			for(Integer h=0; h < freqSetk_1.size(); h++){
 				
 				if(l != h){
 				
@@ -131,7 +134,7 @@ public class Msgsp {
 		
 		prundedCandidates = pruneCandidates(candidateSeq, freqSetk_1);
     	
-    	return candidateSeq;
+    	return prundedCandidates;
     }
     
     /**
@@ -144,28 +147,59 @@ public class Msgsp {
     private ArrayList<Sequence> pruneCandidates(ArrayList<Sequence> candidateSeq, ArrayList<Sequence> freqSetk_1) {
 
     	ArrayList<Sequence> prunedSeq = new ArrayList<Sequence>();
+    	ArrayList<Sequence> subSeq =  new ArrayList<Sequence>();    	
+    	
+    	int size = 0;
+    	
+    	if(freqSetk_1.size() > 0){
+    		size = freqSetk_1.get(0).getAllItems().size();
+    	}
     	
     	for(Sequence seq : candidateSeq){
-    	
-    		ArrayList<Sequence> subSequences = Utilities.getsubSequences(seq); 
-    		ArrayList<Integer> flag = new ArrayList<Integer>();
     		
-    		for(int i=0; i< subSequences.size(); i++){
+    		if(seq.getAllDistinctItems().contains(this.allItems.get(0))){
     			
-    			for(Sequence freq : freqSetk_1){
+    			ArrayList<ItemSet> seeds = Utilities.getsubSequences(seq);     			
+    			
+    			for(int i=0; i < seeds.size(); i++){
     				
-    				if(!flag.contains(i) && !subSequences.get(i).getAllItems().contains(this.allItems.get(0))){   //item with lowest MIS value
-
-	    				if(subSequences.get(i).containedIn(freq)){
-	    					flag.add(i);
-	    				}    				
+    				int pointer = 0;
+    				
+    				if(i != pointer){
+    				
+	    				Sequence newseq = new Sequence();
+	    				
+	    				while(newseq.getAllItems().size() < size && pointer < seeds.size()){
+	    					
+	    					ItemSet is = new ItemSet();
+	    					is.setItems(new ArrayList<Integer>(seeds.get(pointer).getItems()));
+	    					newseq.addItemSet(is);   
+	    					
+	    					pointer = pointer + 1;
+	    					
+	    					if(newseq.getAllItems().size() == size){
+	    						subSeq.add(newseq);
+	    					}
+	    				} 
     				}
-    			}    			
+    			}
+
+    			int count = 0;
+    			
+    			for(int j=0; j<subSeq.size() ; j++){
+    				
+    				if(Utilities.ListContains(freqSetk_1, subSeq.get(j))){
+    					count = count++;
+    				}    				
+    			}
+    			
+    			if(count == subSeq.size()){
+    				prunedSeq.add(seq);
+    			}
     		}
-    		
-    		if(flag.size() >= subSequences.size()){
+    		else{
     			prunedSeq.add(seq);
-    		}
+    		}    		
     	}
     	
 		return prunedSeq;

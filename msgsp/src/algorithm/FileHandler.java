@@ -128,8 +128,8 @@ public class FileHandler {
 			
 			BufferedWriter output = new BufferedWriter(new FileWriter(file));		
 			
-			output.write(new Timestamp(new java.util.Date().getTime()).toString());
-			output.write("\n");
+			//output.write(new Timestamp(new java.util.Date().getTime()).toString());
+			//output.write("\n");
 			
 			for(int i=1; (tmpseq = Utilities.getOfSize(frequentSequences, i)).size() > 0 ; i++){
 				
