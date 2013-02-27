@@ -145,7 +145,7 @@ public class Sequence {
 		Integer firstItemNo = this.getAllItems().get(0);
 		
 		Item firstItem = Utilities.getItemByItemNo(firstItemNo, allItems);
-		Float minMISVal = Utilities.getItemByItemNo(allItems.size() - 1, allItems).getMinItemSupport();
+		Float minMISVal = Utilities.getItemByItemNo(allItems.get(allItems.size()-1).getItemNo(), allItems).getMinItemSupport();
 		Float tmpMISVal = 0.0f;
 		
 		for(int i=1; i < this.getAllItems().size(); i++){
@@ -175,7 +175,7 @@ public class Sequence {
 		Integer lastItemNo = this.getAllItems().get(this.getAllItems().size() - 1);
 		
 		Item lastItem = Utilities.getItemByItemNo(lastItemNo, allItems);
-		Float minMISVal = Utilities.getItemByItemNo(allItems.size() - 1, allItems).getMinItemSupport();
+		Float minMISVal = Utilities.getItemByItemNo(allItems.get(allItems.size()-1).getItemNo(), allItems).getMinItemSupport();
 		Float tmpMISVal = 0.0f;
 		
 		for(int i=0; i < this.getAllItems().size() - 1; i++){

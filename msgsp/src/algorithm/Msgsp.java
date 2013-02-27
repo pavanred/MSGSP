@@ -55,7 +55,7 @@ public class Msgsp {
 			else{
 				candidate_k = generic_CandidateGeneration(freqSetk_1, k-1);
 			}
-    		
+    		    		   		
     		Sequence seq = fileHandler.getNextSequence(true, this.dataFilePath);
 
 			int seqCount = 0;
@@ -63,14 +63,14 @@ public class Msgsp {
 			while(seq != null){
 				
 				seqCount = seqCount + 1;
-				
+												
 				for(Sequence candidate : candidate_k){ 
 
 					if(candidate.containedIn(seq)){
 						candidate.incrementCount();
 					}		
 					
-					Sequence newSeq = new Sequence();
+					/*Sequence newSeq = new Sequence();
 					Integer minMISItem = newSeq.getMinMISItem(this.allItems);
 					boolean done = false;
 					
@@ -92,6 +92,7 @@ public class Msgsp {
 							}
 							else{
 								newIS.addItem(item);
+								
 							}
 						}
 						
@@ -100,8 +101,8 @@ public class Msgsp {
 					
 
 					if(newSeq.containedIn(seq)){
-						newSeq.incrementCount();
-					}
+						newSeq.incrementCount();						
+					}*/
 				}		
 				
 				seq = fileHandler.getNextSequence(false, null);
@@ -254,13 +255,21 @@ public class Msgsp {
              for (int j=i;j< seedSet.size();j++){
             	 
             	 if(i != j){
-            	 
+            		 
 	            	 Item itemi = Utilities.getItemByItemNo(seedSet.get(i), this.allItems);
-	            	 Item itemj = Utilities.getItemByItemNo(seedSet.get(j), this.allItems);           	 
-            	 
+	            	 Item itemj = Utilities.getItemByItemNo(seedSet.get(j), this.allItems);   
+	            	 	            	             	 
 	            	 float supportDifference =(itemj.getActualSupport() - itemi.getActualSupport());
 	            	 
-	            	 if(( itemi.getActualSupport() >= itemi.getMinItemSupport() && itemj.getActualSupport() >= itemj.getMinItemSupport()) && Math.abs(supportDifference) <= this.SDC)  {
+	            	 Item minItem;
+	            	 
+	            	 if(itemi.getMinItemSupport() <= itemj.getMinItemSupport())
+	            		 minItem = itemi;
+	            	 else
+	            		 minItem = itemj;
+	            	 
+	            	 //if(( itemi.getActualSupport() >= itemi.getMinItemSupport() && itemj.getActualSupport() >= itemj.getMinItemSupport()) && Math.abs(supportDifference) <= this.SDC)  {
+	            	 if( minItem.getActualSupport() >= minItem.getMinItemSupport() && Math.abs(supportDifference) <= this.SDC)  {
 	                	                		 
 	                	 Sequence seq1 = new Sequence();         
 		                 ItemSet is1 = new ItemSet();         
