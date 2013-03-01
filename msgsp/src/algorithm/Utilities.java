@@ -204,20 +204,11 @@ public class Utilities {
 
 		for(Sequence s : sequences){
 
-			if(s.getAllItems().size() == seq.getAllItems().size() && s.getItemsets().size() == seq.getItemsets().size()){
-
-				int count=0;
-
-				for(int i=0; i< s.getItemsets().size() ; i++){
-
-					if(s.getItemsets().get(i).getItems().containsAll(seq.getItemsets().get(i).getItems())){
-						count= count+1;
-					}					
-				}		
-
-				if(count == s.getItemsets().size())
-					return true;
-			}			
+			if(s.contains(seq)){
+				
+				contains = true;
+				break;				
+			}				
 		}
 
 		return contains;

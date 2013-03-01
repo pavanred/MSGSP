@@ -86,7 +86,8 @@ public class Sequence {
 	/**
 	 * Checks if a sequence is contained in any k-1 subsequence of another sequence
 	 * @param seq the sequence that is to be checked for
-	 * @return true or false based on whether it is contained or not 
+	 * @return true or false based on whether it is contained or not
+	 * @deprecated use contains() 
 	 */
 	public boolean containedIn(Sequence seq) {
 
@@ -113,6 +114,33 @@ public class Sequence {
 			return false;
 		
 	}
+	
+	/**
+	 * Checks if this sequence contains another sequence
+	 * @param subSequence - sub sequence that is/isn't contained in this sequence
+	 * @return true or false 
+	 */
+	public boolean contains(Sequence subSequence){
+		
+		if(subSequence.getItemsets().size() > this.getItemsets().size())
+			return false;
+		
+		int count = 0;
+		
+		for(int i=0, j=0; j < this.getItemsets().size() && i < subSequence.getItemsets().size(); i++ ){
+			
+			if(this.getItemsets().get(j).contains(subSequence.getItemsets().get(i))){
+				count = count + 1;
+				j++;
+			}
+		}
+		
+		if(count == subSequence.getItemsets().size())		
+			return true;
+		else
+			return false;
+	}
+	
 	
 	/**
 	 * Returns the list of all distinct items

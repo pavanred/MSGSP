@@ -66,43 +66,9 @@ public class Msgsp {
 												
 				for(Sequence candidate : candidate_k){ 
 
-					if(candidate.containedIn(seq)){
+					if(seq.contains(candidate)){
 						candidate.incrementCount();
-					}		
-					
-					/*Sequence newSeq = new Sequence();
-					Integer minMISItem = newSeq.getMinMISItem(this.allItems);
-					boolean done = false;
-					
-					for(ItemSet is : candidate.getItemsets()){
-						
-						ItemSet newIS = new ItemSet();
-						done = false;
-						
-						for(Integer item : is.getItems()){
-							
-							if(item.equals(new Integer(minMISItem))){
-								
-								if(done){
-									newIS.addItem(item);
-								}
-								else{
-									done = true;
-								}
-							}
-							else{
-								newIS.addItem(item);
-								
-							}
-						}
-						
-						newSeq.addItemSet(newIS);
 					}
-					
-
-					if(newSeq.containedIn(seq)){
-						newSeq.incrementCount();						
-					}*/
 				}		
 				
 				seq = fileHandler.getNextSequence(false, null);
@@ -119,8 +85,8 @@ public class Msgsp {
     		frequentSeq.addAll(frequentSet_k);     
     	}
     	
-    	return Utilities.removeDuplicates(frequentSeq);
-    	//return frequentSeq;
+    	//return Utilities.removeDuplicates(frequentSeq);
+    	return frequentSeq;
     }
     
     /**
@@ -166,9 +132,9 @@ public class Msgsp {
 			}			
 		}
 		
-		prundedCandidates = pruneCandidates(candidateSeq, freqSetk_1);
+		//prundedCandidates = pruneCandidates(candidateSeq, freqSetk_1);
     	
-    	return prundedCandidates;
+    	return candidateSeq;
     }
     
     /**
@@ -222,8 +188,7 @@ public class Msgsp {
     			
     			for(int j=0; j<subSeq.size() ; j++){
     				
-    				//if(Utilities.ListContains(freqSetk_1, subSeq.get(j), this.allItems)){
-    				if(Utilities.ListContains(freqSetk_1, subSeq.get(j))){
+    				if(Utilities.ListContains(freqSetk_1, subSeq.get(j), this.allItems)){    				
     					count = count++;
     				}    				
     			}
@@ -294,8 +259,8 @@ public class Msgsp {
              }        
         }
         
-        //candidate = level2_pruneCandidate(candidate,frequentSeq);
-        candidate = pruneCandidates(candidate,frequentSeq);
+        candidate = level2_pruneCandidate(candidate,frequentSeq);
+        //candidate = pruneCandidates(candidate,frequentSeq);
         
     	return candidate;
     }
