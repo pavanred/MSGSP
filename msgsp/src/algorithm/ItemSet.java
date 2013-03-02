@@ -41,11 +41,11 @@ public class ItemSet {
 		
 		int count = 0;
 		
-		for(int i=0, j=0; j < this.getItems().size() && i < subItemSet.getItems().size(); i++ ){
+		for(int i=0, j=0; j < this.getItems().size() && i < subItemSet.getItems().size(); j++ ){
 			
 			if(this.getItems().get(j).equals(subItemSet.getItems().get(i))){
 				count = count + 1;
-				j++;
+				i++;
 			}
 		}
 		

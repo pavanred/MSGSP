@@ -65,8 +65,9 @@ public class Msgsp {
 				seqCount = seqCount + 1;
 												
 				for(Sequence candidate : candidate_k){ 
-
+					
 					if(seq.contains(candidate)){
+					//if(candidate.containedIn(seq)){
 						candidate.incrementCount();
 					}
 				}		
@@ -85,8 +86,8 @@ public class Msgsp {
     		frequentSeq.addAll(frequentSet_k);     
     	}
     	
-    	//return Utilities.removeDuplicates(frequentSeq);
-    	return frequentSeq;
+    	return Utilities.removeDuplicates(frequentSeq);
+    	//return frequentSeq;
     }
     
     /**
@@ -259,7 +260,7 @@ public class Msgsp {
              }        
         }
         
-        candidate = level2_pruneCandidate(candidate,frequentSeq);
+        //candidate = level2_pruneCandidate(candidate,frequentSeq);
         //candidate = pruneCandidates(candidate,frequentSeq);
         
     	return candidate;

@@ -127,11 +127,11 @@ public class Sequence {
 		
 		int count = 0;
 		
-		for(int i=0, j=0; j < this.getItemsets().size() && i < subSequence.getItemsets().size(); i++ ){
+		for(int i=0, j=0; j < this.getItemsets().size() && i < subSequence.getItemsets().size(); j++ ){
 			
 			if(this.getItemsets().get(j).contains(subSequence.getItemsets().get(i))){
 				count = count + 1;
-				j++;
+				i++;
 			}
 		}
 		
