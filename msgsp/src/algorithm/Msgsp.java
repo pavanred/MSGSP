@@ -62,7 +62,7 @@ public class Msgsp {
 				seqCount = seqCount + 1;
 												
 				for(Sequence candidate : candidate_k){ 
-					
+				
 					if(seq.contains(candidate)){
 						candidate.incrementCount();
 					}
@@ -73,9 +73,9 @@ public class Msgsp {
 			
 			ArrayList<Sequence> frequentSet_k = new ArrayList<Sequence>();
 			
-			for(Sequence tmpseq : candidate_k){				
-
-				if(((float)tmpseq.getCount()/seqCount) > tmpseq.getMinMIS(this.allItems))
+			for(Sequence tmpseq : candidate_k){
+				
+				if(((float)tmpseq.getCount()/seqCount) >= tmpseq.getMinMIS(this.allItems))
 					frequentSet_k.add(tmpseq);
 			}
 			
@@ -153,7 +153,7 @@ public class Msgsp {
     	}
     	
     	for(Sequence seq : candidateSeq){
-    		
+    		    		
     		if(seq.getAllDistinctItems().contains(this.allItems.get(0))){
     			
     			ArrayList<ItemSet> seeds = Utilities.getsubSequences(seq);     			
@@ -222,8 +222,8 @@ public class Msgsp {
             		 
 	            	 Item itemi = Utilities.getItemByItemNo(seedSet.get(i), this.allItems);
 	            	 Item itemj = Utilities.getItemByItemNo(seedSet.get(j), this.allItems);   
-	            	 	            	             	 
-	            	 float supportDifference =(itemj.getActualSupport() - itemi.getActualSupport());
+	            	 	
+	            	float supportDifference =(itemj.getActualSupport() - itemi.getActualSupport());
 	            	 
 	            	 Item minItem;
 	            	 
