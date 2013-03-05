@@ -50,21 +50,21 @@ public class Utilities {
 	 * @param candidate - Sequence
 	 * @param allItems list of all Items
 	 */
-	public static Double getSupportDifference(Sequence candidate, ArrayList<Item> allItems) {
+	public static float getSupportDifference(ItemSet is, ArrayList<Item> allItems) {
 		
 		Float minMIS = allItems.get(allItems.size() - 1).getMinItemSupport();
 		Float maxMIS = 0.0f;
 		Float tmp = 0.0f;
 		
-		for(Integer item : candidate.getAllItems()){
-			if((tmp = Utilities.getItemByItemNo(item, allItems).getMinItemSupport()) < minMIS)
+		for(Integer item : is.getItems()){
+			if((tmp = Utilities.getItemByItemNo(item, allItems).getActualSupport()) < minMIS)
 				minMIS = tmp;
 			
-			if((tmp = Utilities.getItemByItemNo(item, allItems).getMinItemSupport()) > maxMIS)
+			if((tmp = Utilities.getItemByItemNo(item, allItems).getActualSupport()) > maxMIS)
 				maxMIS = tmp;
 		}
 		
-		return (double) (maxMIS - minMIS);		
+		return (maxMIS - minMIS);		
 	}
 	
 	/**
@@ -113,20 +113,30 @@ public class Utilities {
 	 */
 	public static ArrayList<Sequence> removeDuplicates(ArrayList<Sequence> allseq) {
 		
+		/*ArrayList<Sequence> sequences = new ArrayList<Sequence>();
+		
+		for(Sequence seq : allseq){
+			
+			if(!sequences.contains(seq))
+				sequences.add(seq);			
+		}
+		
+		return sequences;*/
+		
 		boolean exists = false;
 		ArrayList<Integer> flag = new ArrayList<Integer>();
-		
+
 		for(int i=0; i<allseq.size(); i++){
-			
+
 			for(int j=i+1; j<allseq.size(); j++){
-				
+
 				if(allseq.get(i).getAllItems().size() == allseq.get(j).getAllItems().size()
 						&& allseq.get(i).getItemsets().size() == allseq.get(j).getItemsets().size()){	
-					
+
 					for(int k=0; k < allseq.get(i).getItemsets().size(); k++){
-						
+
 						exists = false;
-						
+
 						if(allseq.get(i).getItemsets().get(k).getItems().containsAll((allseq.get(j).getItemsets().get(k).getItems()))){
 							exists = true;
 						}					
@@ -134,23 +144,23 @@ public class Utilities {
 							exists = false;
 						}
 					}
-					
+
 					if(exists)
 						flag.add(j);
 						//allseq.remove(j);					
 				}
 			}			
 		}
-		
+
 		ArrayList<Sequence> seq = new ArrayList<Sequence>();
-		
+
 		for(int i=0; i < allseq.size(); i++){
-					
+
 			if(!flag.contains(i)){
 				seq.add(allseq.get(i));
 			}
 		}
-		
+
 		return seq;
 	}
 
@@ -160,35 +170,21 @@ public class Utilities {
 	 * @param seq - sequence to be checked
 	 * @param allItems - list of all items
 	 * @return true or false
+	 * @deprecated
 	 */
-	public static boolean ListContains(ArrayList<Sequence> sequences, Sequence seq, ArrayList<Item> allItems) {
+	public static boolean ListContains(ArrayList<Sequence> sequences, Sequence subSequence, boolean prune) {
 		
 		boolean contains = false;
-		
+
 		for(Sequence s : sequences){
-			
-			if(s.getAllItems().size() == seq.getAllItems().size() && s.getItemsets().size() == seq.getItemsets().size()){
+
+			if(s.contains(subSequence)){
 				
-				int count=0;
-				int minMISItem = seq.getMinMISItem(allItems);
-				
-				for(int i=0; i< s.getItemsets().size() ; i++){
-					
-					if(seq.getItemsets().get(i).getItems().contains(minMISItem)){
-						count = count+1;
-					}					
-					else{
-						if(s.getItemsets().get(i).getItems().containsAll(seq.getItemsets().get(i).getItems())){
-							count= count+1;
-						}	
-					}
-				}		
-				
-				if(count == s.getItemsets().size())
-					return true;
-			}			
+				contains = true;
+				break;				
+			}				
 		}
-		
+
 		return contains;
 	}
 	
@@ -205,6 +201,28 @@ public class Utilities {
 		for(Sequence s : sequences){
 
 			if(s.contains(seq)){
+				
+				contains = true;
+				break;				
+			}				
+		}
+
+		return contains;
+	}	
+	
+	/**
+	 * checks if a list of sequences contains (exact match) a sequence
+	 * @param sequences - list of sequences
+	 * @param seq - sequence to be checked
+	 * @return true or false
+	 */
+	public static boolean ListHas(ArrayList<Sequence> sequences, Sequence seq) {
+
+		boolean contains = false;
+
+		for(Sequence s : sequences){
+
+			if(s.isEqualTo(seq)){
 				
 				contains = true;
 				break;				

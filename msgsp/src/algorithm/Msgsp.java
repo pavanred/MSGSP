@@ -67,7 +67,6 @@ public class Msgsp {
 				for(Sequence candidate : candidate_k){ 
 					
 					if(seq.contains(candidate)){
-					//if(candidate.containedIn(seq)){
 						candidate.incrementCount();
 					}
 				}		
@@ -86,8 +85,8 @@ public class Msgsp {
     		frequentSeq.addAll(frequentSet_k);     
     	}
     	
-    	return Utilities.removeDuplicates(frequentSeq);
-    	//return frequentSeq;
+    	//return Utilities.removeDuplicates(frequentSeq);
+    	return frequentSeq;
     }
     
     /**
@@ -133,9 +132,9 @@ public class Msgsp {
 			}			
 		}
 		
-		//prundedCandidates = pruneCandidates(candidateSeq, freqSetk_1);
+		prundedCandidates = pruneCandidates(candidateSeq, freqSetk_1);
     	
-    	return candidateSeq;
+    	return prundedCandidates;
     }
     
     /**
@@ -189,17 +188,19 @@ public class Msgsp {
     			
     			for(int j=0; j<subSeq.size() ; j++){
     				
-    				if(Utilities.ListContains(freqSetk_1, subSeq.get(j), this.allItems)){    				
+    				if(Utilities.ListContains(freqSetk_1, subSeq.get(j))){    				
     					count = count++;
     				}    				
     			}
     			
     			if(count == subSeq.size()){
-    				prunedSeq.add(seq);
+    				if(!Utilities.ListHas(prunedSeq, seq))
+    					prunedSeq.add(seq);
     			}
     		}
     		else{
-    			prunedSeq.add(seq);
+    			if(!Utilities.ListHas(prunedSeq, seq))
+    				prunedSeq.add(seq);
     		}    		
     	}
     	
@@ -261,7 +262,7 @@ public class Msgsp {
         }
         
         //candidate = level2_pruneCandidate(candidate,frequentSeq);
-        //candidate = pruneCandidates(candidate,frequentSeq);
+        candidate = pruneCandidates(candidate,frequentSeq);
         
     	return candidate;
     }
@@ -279,6 +280,7 @@ public class Msgsp {
 
     	Sequence candidate = new Sequence();
 		ArrayList<Sequence> candidates = new ArrayList<Sequence>();
+		float supportDifference = 0.0f;
 		
 		if(condition1(s1,s2) &&  condition2(s1,s2)){
 		
@@ -301,7 +303,10 @@ public class Msgsp {
 					candidate.addItemSet(newItemSet);
 				}
 				
-				if(Utilities.getSupportDifference(candidate, this.allItems) <= this.SDC){
+				supportDifference = Utilities.getSupportDifference(firstItemSet, this.allItems);
+				
+				//if(Utilities.getSupportDifference(candidate, this.allItems) <= this.SDC){
+				if(supportDifference <= this.SDC){
 						candidates.add(candidate);
 				}				
 				
@@ -328,13 +333,14 @@ public class Msgsp {
 						candidate.addItemSet(newItemSet);
 					}
 														
-					if(Utilities.getSupportDifference(candidate, this.allItems) <= this.SDC){							
+					//if(Utilities.getSupportDifference(candidate, this.allItems) <= this.SDC){
+					if(supportDifference <= this.SDC){
 							candidates.add(candidate);
 					}
 				}					
 			}
-			else if(((s1.getItemsets().size() == 2 && s1.getAllItems().size() == 2) && 
-					(Utilities.getItemByItemNo(tmpS2.get(tmpS2.size() - 1), this.allItems).getMinItemSupport() > Utilities.getItemByItemNo(tmpS1.get(tmpS1.size() - 1), this.allItems).getMinItemSupport())) 
+			else if(((s2.getItemsets().size() == 2 && s2.getAllItems().size() == 1) && 
+					(Utilities.getItemByItemNo(tmpS1.get(tmpS1.size() - 1), this.allItems).getMinItemSupport() > Utilities.getItemByItemNo(tmpS2.get(tmpS2.size() - 1), this.allItems).getMinItemSupport())) 
 					|| (s1.getItemsets().size() > 2)){
 				
 				candidate = new Sequence();
@@ -357,7 +363,8 @@ public class Msgsp {
 					candidate.addItemSet(newItemSet);
 				}
 													
-				if(Utilities.getSupportDifference(candidate, this.allItems) <= this.SDC){							
+				//if(Utilities.getSupportDifference(candidate, this.allItems) <= this.SDC){
+				if(supportDifference <= this.SDC){
 						candidates.add(candidate);
 				}
 			}
@@ -377,6 +384,7 @@ public class Msgsp {
 
 		Sequence candidate = new Sequence();
 		ArrayList<Sequence> candidates = new ArrayList<Sequence>();
+		float supportDifference = 0.0f;
 		
 		if(condition1(s1,s2) &&  condition2(s1,s2)){
 		
@@ -399,7 +407,10 @@ public class Msgsp {
 				
 				candidate.addItemSet(lastItemSet);
 				
-				if(Utilities.getSupportDifference(candidate, this.allItems) <= this.SDC){
+				supportDifference = Utilities.getSupportDifference(lastItemSet, this.allItems);
+				
+				//if(Utilities.getSupportDifference(candidate, this.allItems) <= this.SDC){
+				if(supportDifference <= this.SDC){
 						candidates.add(candidate);
 				}				
 				
@@ -416,13 +427,16 @@ public class Msgsp {
 					}
 					
 					candidate.getItemsets().get(candidate.getItemsets().size() - 1).addItem(new Integer(s2.getLastItem()));
+					
+					supportDifference = Utilities.getSupportDifference(candidate.getItemsets().get(candidate.getItemsets().size() - 1), this.allItems);
 														
-					if(Utilities.getSupportDifference(candidate, this.allItems) <= this.SDC){							
+					//if(Utilities.getSupportDifference(candidate, this.allItems) <= this.SDC){
+					if(supportDifference <= this.SDC){
 							candidates.add(candidate);
 					}
 				}					
 			}
-			else if(((s1.getItemsets().size() == 2 && s1.getAllItems().size() == 2) && 
+			else if(((s1.getItemsets().size() == 2 && s1.getAllItems().size() == 1) && 
 					(Utilities.getItemByItemNo(tmpS2.get(tmpS2.size() - 1), this.allItems).getMinItemSupport() > Utilities.getItemByItemNo(tmpS1.get(tmpS1.size() - 1), this.allItems).getMinItemSupport())) 
 					|| (s1.getItemsets().size() > 2)){
 				
@@ -436,8 +450,11 @@ public class Msgsp {
 				}
 				
 				candidate.getItemsets().get(candidate.getItemsets().size() - 1).addItem(new Integer(s2.getLastItem()));
-													
-				if(Utilities.getSupportDifference(candidate, this.allItems) <= this.SDC){						
+					
+				supportDifference = Utilities.getSupportDifference(candidate.getItemsets().get(candidate.getItemsets().size() - 1), this.allItems);
+				
+				//if(Utilities.getSupportDifference(candidate, this.allItems) <= this.SDC){
+				if(supportDifference <= this.SDC){
 						candidates.add(candidate);
 				}
 			}
@@ -458,6 +475,7 @@ public class Msgsp {
 		ArrayList<Integer> tmpS1;
 		ArrayList<Integer> tmpS2;
 		Sequence candidate = new Sequence();
+		float supportDifference = 0.0f;
     	
     	tmpS1 = new ArrayList<Integer>(s1.getAllItems());
 		tmpS2 = new ArrayList<Integer>(s2.getAllItems());
@@ -478,6 +496,8 @@ public class Msgsp {
 					lastItemSet.addItem(s2.getLastItem());
 					
 					candidate.addItemSet(lastItemSet);
+					
+					supportDifference = Utilities.getSupportDifference(lastItemSet, this.allItems);
 				}
 				else{
 					candidate = new Sequence();
@@ -490,6 +510,8 @@ public class Msgsp {
 							lastItemSet.addItem(s2.getLastItem());
 							
 							candidate.addItemSet(lastItemSet);
+							
+							supportDifference = Utilities.getSupportDifference(lastItemSet, this.allItems);
 						}
 						else{
 							candidate.addItemSet(s1.getItemsets().get(i));
@@ -497,7 +519,8 @@ public class Msgsp {
 					}					
 				}
 				
-				if(Utilities.getSupportDifference(candidate, this.allItems) > this.SDC)						
+				//if(Utilities.getSupportDifference(candidate, this.allItems) > this.SDC)
+				if(supportDifference <= this.SDC)
 					candidate = null;
 			}			
 		}

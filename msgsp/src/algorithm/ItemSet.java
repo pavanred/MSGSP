@@ -54,6 +54,31 @@ public class ItemSet {
 		else
 			return false;
 	}
+	
+	/**
+     * Check if this itemset contains (exact equal) an itemset
+     * @param subItemSet - child itemset
+     * @return true or false
+     */
+	public boolean isEqualTo(ItemSet subItemSet){
+					
+		if(subItemSet.getItems().size() != this.getItems().size())
+			return false;
+		
+		int count = 0;
+		
+		for(int i=0; i < this.getItems().size(); i++ ){
+			
+			if(this.getItems().get(i).equals(subItemSet.getItems().get(i))){
+				count = count + 1;
+			}
+		}
+		
+		if(count == subItemSet.getItems().size())		
+			return true;
+		else
+			return false;
+	}
     
     //Getter Setter
     public void setItems(ArrayList<Integer> _items){

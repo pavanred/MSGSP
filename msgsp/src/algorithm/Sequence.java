@@ -267,6 +267,31 @@ public class Sequence {
 		return itm;
 	}
 	
+	/**
+	 * Checks if this sequence contains (exact match) another sequence
+	 * @param subSequence - sub sequence that is/isn't contained in this sequence
+	 * @return true or false 
+	 */
+	public boolean isEqualTo(Sequence subSequence){
+		
+		if(subSequence.getItemsets().size() != this.getItemsets().size())
+			return false;
+		
+		int count = 0;
+		
+		for(int i=0; i < this.getItemsets().size(); i++ ){
+			
+			if(this.getItemsets().get(i).isEqualTo(subSequence.getItemsets().get(i))){
+				count = count + 1;
+			}
+		}
+		
+		if(count == subSequence.getItemsets().size())		
+			return true;
+		else
+			return false;
+	}
+	
 	//Getter Setter
 	public Integer getCount(){
 		return this.count;
