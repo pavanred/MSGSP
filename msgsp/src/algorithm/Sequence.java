@@ -57,6 +57,22 @@ public class Sequence {
 	}
 	
 	/**
+	 * get the size of the sequence
+	 */
+	public int getSize(){
+		
+		return this.getItemsets().size();
+	}
+	
+	/**
+	 * get the length of the sequence
+	 */
+	public int getlength(){
+		
+		return this.getAllItems().size();
+	}
+	
+	/**
 	 * increments count of the sequence by 1
 	 */
 	public void incrementCount(){

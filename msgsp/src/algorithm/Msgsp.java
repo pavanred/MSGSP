@@ -310,7 +310,7 @@ public class Msgsp {
 						candidates.add(candidate);
 				}				
 				
-				if((s2.getItemsets().size() == 2 && s2.getAllItems().size() == 2) && 
+				if((s2.getlength() == 2 && s2.getSize() == 2) && 
 						(Utilities.getItemByItemNo(tmpS1.get(0), this.allItems).getMinItemSupport() > Utilities.getItemByItemNo(tmpS2.get(0), this.allItems).getMinItemSupport())) {
 					
 					candidate = new Sequence();
@@ -339,9 +339,9 @@ public class Msgsp {
 					}
 				}					
 			}
-			else if(((s2.getItemsets().size() == 2 && s2.getAllItems().size() == 1) && 
+			else if(((s2.getlength() == 2 && s2.getSize() == 1) && 
 					(Utilities.getItemByItemNo(tmpS1.get(tmpS1.size() - 1), this.allItems).getMinItemSupport() > Utilities.getItemByItemNo(tmpS2.get(tmpS2.size() - 1), this.allItems).getMinItemSupport())) 
-					|| (s1.getItemsets().size() > 2)){
+					|| (s2.getlength() > 2)){
 				
 				candidate = new Sequence();
 				
@@ -414,7 +414,8 @@ public class Msgsp {
 						candidates.add(candidate);
 				}				
 				
-				if((s1.getItemsets().size() == 2 && s1.getAllItems().size() == 2) && 
+				//if((s1.getItemsets().size() == 2 && s1.getAllItems().size() == 2) &&
+				if((s1.getSize() == 2 && s1.getlength() == 2) &&
 						(Utilities.getItemByItemNo(tmpS2.get(tmpS2.size() - 1), this.allItems).getMinItemSupport() > Utilities.getItemByItemNo(tmpS1.get(tmpS1.size() - 1), this.allItems).getMinItemSupport())) {
 					
 					candidate = new Sequence();
@@ -436,9 +437,10 @@ public class Msgsp {
 					}
 				}					
 			}
-			else if(((s1.getItemsets().size() == 2 && s1.getAllItems().size() == 1) && 
+			//else if(((s1.getItemsets().size() == 2 && s1.getAllItems().size() == 1) &&
+			else if(((s1.getlength() == 2 && s1.getSize() == 1) &&
 					(Utilities.getItemByItemNo(tmpS2.get(tmpS2.size() - 1), this.allItems).getMinItemSupport() > Utilities.getItemByItemNo(tmpS1.get(tmpS1.size() - 1), this.allItems).getMinItemSupport())) 
-					|| (s1.getItemsets().size() > 2)){
+					|| (s1.getlength() > 2)){  //|| (s1.getItemsets().size() > 2)){
 				
 				candidate = new Sequence();
 				
