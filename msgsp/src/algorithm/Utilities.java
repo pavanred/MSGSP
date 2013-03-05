@@ -76,7 +76,6 @@ public class Utilities {
 		
 		int n = seq.getAllItems().size();
 		int[] masks = new int[n];
-		Sequence newSeq = new Sequence();
 		ArrayList<ItemSet> subSequences = new ArrayList<ItemSet>();
 		
 		for(int i=0; i<n;i++){

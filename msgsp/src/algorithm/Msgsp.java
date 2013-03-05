@@ -3,9 +3,6 @@ package algorithm;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 public class Msgsp {
 	
@@ -589,7 +586,8 @@ public class Msgsp {
      * @param frequentSeq - F1
      * @return level 2 candidates
      */
-    private ArrayList<Sequence> level2_pruneCandidate(ArrayList<Sequence> candidate, ArrayList<Sequence> frequentSeq) {
+    @SuppressWarnings("unused")
+	private ArrayList<Sequence> level2_pruneCandidate(ArrayList<Sequence> candidate, ArrayList<Sequence> frequentSeq) {
 		
     	ArrayList<Integer> frequentFlag = new ArrayList<Integer>();
     	ArrayList<Sequence> pruned_candidate = new ArrayList<Sequence>();
