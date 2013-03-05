@@ -2,7 +2,7 @@
 
 ###Implementation of MS-GSP algorithm
 Mining Sequential Patterns Based on GSP (Generalized Sequential Patterns)
-MS-GSP algorithm - Association rule mining using multiple minimum supports with a support difference constraint.
+MS-GSP algorithm - Sequential pattern mining using multiple minimum supports with a support difference constraint.
 
 ###Input (Format)
 data.txt
